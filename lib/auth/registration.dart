@@ -30,7 +30,7 @@ Future<String> makePostRequest(n, m, p) async {
     String status = data["status"];
     if (status == 'success') {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setString('name', n);
+      //prefs.setString('name', n);
       prefs.setString('email', m);
       prefs.setString('password', p);
       // print(prefs.getString('name'));
@@ -73,13 +73,18 @@ Future<void> _displayResponse(context, res) async {
 }
 
 class Register {
-  final String name;
+  //final String name;
   final String email;
   final String password;
+  final String confirmpassword;
 
-  Register(this.name, this.email, this.password);
+  Register(this.email, this.password, this.confirmpassword);
 
-  Map toJson() => {'name': name, 'email': email, 'password': password};
+  Map toJson() => {
+        'email': email,
+        'password': password,
+        'confirmpassword': confirmpassword
+      };
 }
 
 void main() {
