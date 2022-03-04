@@ -9,6 +9,7 @@ import 'package:order_app/model/cart.dart';
 import 'package:order_app/page/emptycart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:order_app/auth/registration.dart';
+import 'package:order_app/page/complete_profile_page.dart';
 
 void main() => runApp(App());
 
@@ -151,17 +152,21 @@ class ViewCartState extends State<ViewCart> {
   checkRegister() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     print(prefs.getString('name'));
-    String name = prefs.getString('name');
-    if (name.isEmpty) {
+    if (prefs.getString('name') == null) {
       final snackBar =
-          SnackBar(backgroundColor: Colors.red, content: Text("pls Registr"));
+          SnackBar(backgroundColor: Colors.red, content: Text("pls Register"));
       ScaffoldMessenger.of(_scaffoldKey.currentContext).showSnackBar(snackBar);
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => SecondPage()));
     } else {
+      print("else part ");
       final snackBar = SnackBar(
           backgroundColor: Colors.red,
-          content: Text("pls provide Address details"));
+          content: Text("pls Complete Profile Details"));
 
       ScaffoldMessenger.of(_scaffoldKey.currentContext).showSnackBar(snackBar);
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => CompleteProfilePage()));
     }
   }
 

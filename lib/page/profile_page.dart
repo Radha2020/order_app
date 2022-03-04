@@ -1,9 +1,12 @@
 import 'dart:async';
 
+import 'package:order_app/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:order_app/page/account_details.dart';
 
 // This class handles the Page to dispaly the user's info on the "Edit Profile" Screen
 class ProfilePage extends StatefulWidget {
@@ -28,6 +31,18 @@ class _ProfilePageState extends State<ProfilePage> {
       print(name);
       print(email);
     });
+  }
+
+  void callpage() {
+    print("account pressed");
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => Account_detailsPage()));
+  }
+
+  void clearuser() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    await preferences.clear();
+    Navigator.push(context, MaterialPageRoute(builder: (context) => MyApp()));
   }
 
   Widget build(BuildContext context) {
@@ -62,21 +77,35 @@ class _ProfilePageState extends State<ProfilePage> {
               )),
           Row(children: [
             Padding(
-                padding: EdgeInsets.all(20.0),
-                child: Text(
-                  '$name   $email',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w400,
-                    //  color: Color.fromRGBO(64, 105, 225, 1),
-                  ),
-                )),
+              padding: EdgeInsets.all(20.0),
+              child: Text(
+                'Name:',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w400,
+                  color: Color.fromRGBO(64, 105, 225, 1),
+                ),
+              ),
+            ),
+            SizedBox(width: 20),
+            Text(
+              '$name',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w400,
+                // color: Color.fromRGBO(64, 105, 225, 1),
+              ),
+            ),
           ]),
           SizedBox(height: 20),
           ProfileMenu(
             icon: "assets/User Icon.svg",
             text: "My Account",
-            press: () {},
+            press: () {
+              callpage();
+              //  Navigator.push(context,
+              //           MaterialPageRoute(builder: (context) => Account_detailsPage()));
+            },
           ),
           ProfileMenu(
             icon: "assets/User Icon.svg",
@@ -86,7 +115,9 @@ class _ProfilePageState extends State<ProfilePage> {
           ProfileMenu(
             icon: "assets/User Icon.svg",
             text: "Log Out",
-            press: () {},
+            press: () {
+              clearuser();
+            },
           ),
         ],
       )
