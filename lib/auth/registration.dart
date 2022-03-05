@@ -7,9 +7,11 @@ import 'package:order_app/main.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-Future<String> makePostRequest(n, m, p) async {
+import 'package:flutter_svg/svg.dart';
+
+Future<String> makePostRequest(email, password, confirmpassword) async {
   await new Future.delayed(const Duration(seconds: 5));
-  Register register = Register(n, m, p);
+  Register register = Register(email, password);
   String jsonRegister = jsonEncode(register);
   print(jsonRegister);
 
@@ -31,8 +33,8 @@ Future<String> makePostRequest(n, m, p) async {
     if (status == 'success') {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       //prefs.setString('name', n);
-      prefs.setString('email', m);
-      prefs.setString('password', p);
+      prefs.setString('email', email);
+      prefs.setString('password', password);
       // print(prefs.getString('name'));
     }
     //print(response.body.toString());
@@ -57,13 +59,16 @@ Future<void> _displayResponse(context, res) async {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text('API Response'),
-            content: Text('$res'),
+            //title: Text('Welcome'),
+            // content: Text('$res'),
+            content: Text("Welcome to Our Shop"),
             actions: <Widget>[
               new FlatButton(
                 child: new Text('OK'),
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => MyApp()));
+                  //Navigator.of(context).pop();
                 },
               )
             ],
@@ -76,14 +81,12 @@ class Register {
   //final String name;
   final String email;
   final String password;
-  final String confirmpassword;
 
-  Register(this.email, this.password, this.confirmpassword);
+  Register(this.email, this.password);
 
   Map toJson() => {
         'email': email,
         'password': password,
-        'confirmpassword': confirmpassword
       };
 }
 
@@ -99,10 +102,12 @@ class SecondPage extends StatefulWidget {
 }
 
 class _State extends State<SecondPage> {
-  TextEditingController nameController = TextEditingController();
+  TextEditingController confirmpasswordController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   String res = '';
+  String password;
+  String confirmpassword;
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -112,157 +117,164 @@ class _State extends State<SecondPage> {
         //  backgroundColor: Colors.yellow,
         //   title: Text('Second screen'),
         // ),
-        body: Padding(
-            padding: EdgeInsets.all(1),
-            child: new Form(
-                key: _formKey,
-                child: ListView(
-                  children: <Widget>[
-                    Container(
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.all(10),
-                        child: Text(
-                          'Register',
-                          style: TextStyle(fontSize: 20),
-                        )),
-                    Container(
-                      padding: EdgeInsets.all(10),
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                          icon: Icon(
-                            Icons.person,
-                            color: Colors.amber,
-                          ),
-                          labelText: 'User Name',
-                          labelStyle: TextStyle(
-                            color: Colors.blue,
-                          ),
-                          enabledBorder: new UnderlineInputBorder(
-                              borderSide: new BorderSide(color: Colors.blue)),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.red),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Please enter some text';
-                          }
-                          return null;
-                        },
-                        controller: nameController,
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.all(10),
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                          icon: Icon(Icons.mail, color: Colors.amber),
-                          labelText: 'Email',
-                          labelStyle: TextStyle(
-                            color: Colors.blue,
-                          ),
-                          enabledBorder: new UnderlineInputBorder(
-                              borderSide: new BorderSide(color: Colors.blue)),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.red),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Please enter some text';
-                          }
-                          return null;
-                        },
-                        controller: emailController,
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                          icon: Icon(Icons.remove_red_eye, color: Colors.amber),
-                          labelText: 'Password',
-                          labelStyle: TextStyle(
-                            color: Colors.blue,
-                          ),
-                          enabledBorder: new UnderlineInputBorder(
-                              borderSide: new BorderSide(color: Colors.blue)),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.red),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Please enter some text';
-                          }
-                          return null;
-                        },
-                        controller: passwordController,
-                      ),
-                    ),
-                    Container(
-                      height: 50,
-                      padding: EdgeInsets.only(top: 20, left: 20, right: 20),
-                      child: RaisedButton(
-                        textColor: Colors.white,
-                        color: Colors.deepOrangeAccent,
-                        child: Text('Submit'),
+        body: Center(
+            child: SingleChildScrollView(
+                //   child: Padding(
+                //     padding: EdgeInsets.all(1),
+                child: new Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        //CircleAvatar(
+                        //radius: 50,
+                        Image.asset("assets/logo.png"),
+                        //),
+                        SizedBox(height: 15),
 
-                        onPressed: () async {
-                          //       print(nameController.text);
-                          //     print(passwordController.text);
-
-                          if (_formKey.currentState.validate()) {
-                            BuildContext dialogContext;
-                            showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (BuildContext context) {
-                                dialogContext = context;
-                                return Dialog(
-                                  child: Container(
-                                    //  padding:EdgeInsets.fromLTRB(10, 10, 10, 0),
-                                    width: 20.0,
-                                    height: 70.0,
-
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        CircularProgressIndicator(),
-                                        Padding(
-                                          padding: EdgeInsets.only(left: 20),
-                                          child: Text('Please Wait!'),
-                                        )
-                                      ],
-                                    ),
+                        Padding(
+                            padding: EdgeInsets.only(
+                                bottom: 15, left: 15, right: 15, top: 10),
+                            child: TextFormField(
+                              keyboardType: TextInputType.text,
+                              decoration: InputDecoration(
+                                  prefixIcon: IconButton(
+                                    icon: Icon(Icons.email_outlined),
                                   ),
-                                );
+                                  hintText: 'Email',
+                                  contentPadding: const EdgeInsets.all(15),
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(30))),
+                              validator: (value) {
+                                if (value.isEmpty) {
+                                  return 'Please enter some text';
+                                }
+
+                                if (!RegExp(
+                                        "^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]")
+                                    .hasMatch(value)) {
+                                  return "Please enter a valid email address";
+                                }
+
+                                return null;
                               },
-                            );
-                            String res = await makePostRequest(
-                                    nameController.text,
-                                    emailController.text,
-                                    passwordController.text)
-                                .whenComplete(
-                                    () => Navigator.pop(dialogContext));
+                              controller: emailController,
+                            )),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              bottom: 15, left: 15, right: 15, top: 10),
+                          child: TextFormField(
+                            keyboardType: TextInputType.text,
+                            obscureText: true,
+                            decoration: InputDecoration(
+                                prefixIcon: IconButton(
+                                  icon: Icon(Icons.lock),
+                                ),
+                                hintText: 'Password',
+                                contentPadding: const EdgeInsets.all(15),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(30))),
+                            validator: (value) {
+                              if (value.isEmpty) {
+                                return 'Please enter some text';
+                              }
+                              return null;
+                            },
+                            controller: passwordController,
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              bottom: 15, left: 15, right: 15, top: 15),
+                          child: TextFormField(
+                            keyboardType: TextInputType.text,
+                            obscureText: true,
+                            decoration: InputDecoration(
+                                prefixIcon: IconButton(
+                                  icon: Icon(Icons.lock),
+                                ),
+                                hintText: 'Confirm Password',
+                                contentPadding: const EdgeInsets.all(15),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(30))),
+                            validator: (value) {
+                              if (value.isEmpty) {
+                                return 'Please enter some text';
+                              }
+                              if (passwordController.text !=
+                                  confirmpasswordController.text) {
+                                return 'password does not match';
+                              }
+                              return null;
+                            },
+                            controller: confirmpasswordController,
+                          ),
+                        ),
+                        Container(
+                          height: 50,
+                          padding:
+                              EdgeInsets.only(top: 20, left: 20, right: 20),
+                          child: RaisedButton(
+                            textColor: Colors.white,
+                            color: Colors.deepOrangeAccent,
+                            child: Text('Submit'),
 
-                            await _displayResponse(context, res);
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => MyApp()));
+                            onPressed: () async {
+                              //       print(nameController.text);
+                              //     print(passwordController.text);
 
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => MyApp()));
-                          }
-                        },
-                        //makePostRequest(nameController.text,emailController.text,passwordController.text);
-                      ),
-                    ),
-                  ],
-                ))));
+                              if (_formKey.currentState.validate()) {
+                                BuildContext dialogContext;
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (BuildContext context) {
+                                    dialogContext = context;
+                                    return Dialog(
+                                      child: Container(
+                                        //  padding:EdgeInsets.fromLTRB(10, 10, 10, 0),
+                                        width: 20.0,
+                                        height: 70.0,
+
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: <Widget>[
+                                            CircularProgressIndicator(),
+                                            Padding(
+                                              padding:
+                                                  EdgeInsets.only(left: 20),
+                                              child: Text('Please Wait!'),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                                String res = await makePostRequest(
+                                        emailController.text,
+                                        passwordController.text,
+                                        confirmpasswordController.text)
+                                    .whenComplete(
+                                        () => Navigator.pop(dialogContext));
+
+                                await _displayResponse(context, res);
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => MyApp()));
+
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => MyApp()));
+                              }
+                            },
+                            //makePostRequest(nameController.text,emailController.text,passwordController.text);
+                          ),
+                        ),
+                      ],
+                    )))));
   }
 }

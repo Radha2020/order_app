@@ -75,28 +75,21 @@ class _ProfilePageState extends State<ProfilePage> {
                 backgroundColor: Color.fromRGBO(220, 220, 220, 1),
                 backgroundImage: AssetImage('assets/user.png'),
               )),
-          Row(children: [
-            Padding(
-              padding: EdgeInsets.all(20.0),
-              child: Text(
-                'Name:',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w400,
-                  color: Color.fromRGBO(64, 105, 225, 1),
-                ),
-              ),
-            ),
-            SizedBox(width: 20),
-            Text(
-              '$name',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w400,
-                // color: Color.fromRGBO(64, 105, 225, 1),
-              ),
-            ),
-          ]),
+          email != null
+              ? Row(children: [
+                  Padding(
+                    padding: EdgeInsets.all(20.0),
+                    child: Text(
+                      '$email',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w400,
+                        color: Color.fromRGBO(64, 105, 225, 1),
+                      ),
+                    ),
+                  ),
+                ])
+              : Row(),
           SizedBox(height: 20),
           ProfileMenu(
             icon: "assets/User Icon.svg",

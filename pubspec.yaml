@@ -49,6 +49,8 @@ flutter:
     - assets/fruits.png 
     - assets/user.png 
     - assets/User Icon.svg 
+    - assets/Mail.svg 
+    
     
   uses-material-design: true
 

@@ -11,6 +11,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:order_app/auth/registration.dart';
 import 'package:order_app/page/complete_profile_page.dart';
 
+import 'package:order_app/auth/registration.dart';
+
 void main() => runApp(App());
 
 class App extends StatelessWidget {
@@ -71,6 +73,7 @@ class ViewCartState extends State<ViewCart> {
     //  print(Rows);
     Rows.forEach((row) => cart.add(Cart.fromMap(row)));
     print(cart.length);
+
     if (cart.length == 0) {
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => EmptyCart()));

@@ -51,6 +51,7 @@ class _State extends State<MyApp> {
   List<MyBanner> bannerList = [];
   void initState() {
     super.initState();
+    checkRegister();
     Services.fetchCategory().then((categoriesFromServer) {
       setState(() {
         categoryList = categoriesFromServer;
@@ -65,6 +66,19 @@ class _State extends State<MyApp> {
         print(bannerList.length);
       });
     });
+  }
+
+  void checkRegister() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    print(prefs.getString('email'));
+
+    if (prefs.getString('email') == null) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => SecondPage()));
+    } else {
+      return;
+    }
   }
 
   void getMessage() {
@@ -323,13 +337,15 @@ class _State extends State<MyApp> {
                     ]);
                   })),
           SizedBox(height: 30),
-          Text(
-            '$_category',
-            style: Theme.of(context)
-                .textTheme
-                .headline6
-                .copyWith(fontWeight: FontWeight.bold, fontSize: 18),
-          ),
+          _category != null
+              ? Text(
+                  '$_category',
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline6
+                      .copyWith(fontWeight: FontWeight.bold, fontSize: 18),
+                )
+              : Text(''),
           Expanded(
             child: ListView.builder(
                 padding: EdgeInsets.all(10.0),
