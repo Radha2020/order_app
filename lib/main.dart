@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 //import 'package:geocoding/geocoding.dart';
 //import 'package:flutter/services.dart';
 
+import 'package:shimmer/shimmer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:order_app/auth/login.dart';
 import 'package:order_app/auth/registration.dart';
@@ -46,17 +47,19 @@ class _State extends State<MyApp> {
   String _category;
   List<Items> items = List();
   List<Items> filtereditems = List();
-
+  bool _enabled = true;
   List<Category> categoryList = [];
   List<MyBanner> bannerList = [];
   void initState() {
     super.initState();
-    checkRegister();
+    // checkRegister();
+
     Services.fetchCategory().then((categoriesFromServer) {
       setState(() {
         categoryList = categoriesFromServer;
         print(categoryList.length);
         _category = "All";
+        //_enabled = false;
       });
     });
 
