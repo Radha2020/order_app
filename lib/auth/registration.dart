@@ -9,10 +9,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:flutter_svg/svg.dart';
 
-Future<String> makePostRequest(email, password, confirmpassword) async {
+Future<String> makePostRequest(name, email, phone, address) async {
   await new Future.delayed(const Duration(seconds: 5));
-  Register register = Register(email, password);
+  Register register = Register(name, email, phone, address);
   String jsonRegister = jsonEncode(register);
+  print("reg details");
   print(jsonRegister);
 
 // set up POST request arguments
@@ -33,8 +34,11 @@ Future<String> makePostRequest(email, password, confirmpassword) async {
     if (status == 'success') {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       //prefs.setString('name', n);
+      prefs.setString('name', name);
       prefs.setString('email', email);
-      prefs.setString('password', password);
+      prefs.setString('phone', phone);
+      prefs.setString('address', address);
+
       // print(prefs.getString('name'));
     }
     //print(response.body.toString());
@@ -79,15 +83,15 @@ Future<void> _displayResponse(context, res) async {
 
 class Register {
   //final String name;
+  final String name;
   final String email;
-  final String password;
+  final String phone;
+  final String address;
 
-  Register(this.email, this.password);
+  Register(this.name, this.email, this.phone, this.address);
 
-  Map toJson() => {
-        'email': email,
-        'password': password,
-      };
+  Map toJson() =>
+      {'name': name, 'email': email, 'phone': phone, 'address': address};
 }
 
 void main() {
@@ -104,7 +108,12 @@ class SecondPage extends StatefulWidget {
 class _State extends State<SecondPage> {
   TextEditingController confirmpasswordController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
+  TextEditingController addressController = TextEditingController();
+
   String res = '';
   String password;
   String confirmpassword;
@@ -139,6 +148,29 @@ class _State extends State<SecondPage> {
                               keyboardType: TextInputType.text,
                               decoration: InputDecoration(
                                   prefixIcon: IconButton(
+                                    icon: Icon(Icons.person),
+                                  ),
+                                  hintText: 'Name',
+                                  contentPadding: const EdgeInsets.all(15),
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(30))),
+                              validator: (value) {
+                                if (value.isEmpty) {
+                                  return 'Please enter some text';
+                                }
+
+                                return null;
+                              },
+                              controller: nameController,
+                            )),
+
+                        Padding(
+                            padding: EdgeInsets.only(
+                                bottom: 15, left: 15, right: 15, top: 10),
+                            child: TextFormField(
+                              keyboardType: TextInputType.text,
+                              decoration: InputDecoration(
+                                  prefixIcon: IconButton(
                                     icon: Icon(Icons.email_outlined),
                                   ),
                                   hintText: 'Email',
@@ -160,7 +192,52 @@ class _State extends State<SecondPage> {
                               },
                               controller: emailController,
                             )),
+
                         Padding(
+                          padding: EdgeInsets.only(
+                              bottom: 15, left: 15, right: 15, top: 10),
+                          child: TextFormField(
+                            keyboardType: TextInputType.phone,
+                            decoration: InputDecoration(
+                                prefixIcon: IconButton(
+                                  icon: Icon(Icons.phone_android),
+                                ),
+                                hintText: 'Contact number',
+                                contentPadding: const EdgeInsets.all(15),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(30))),
+                            validator: (value) {
+                              if (value.isEmpty) {
+                                return 'Please enter phone number';
+                              }
+                              return null;
+                            },
+                            controller: phoneController,
+                          ),
+                        ),
+
+                        Padding(
+                          padding: EdgeInsets.only(
+                              bottom: 15, left: 15, right: 15, top: 10),
+                          child: TextFormField(
+                            minLines: 8,
+                            maxLines: null,
+                            decoration: InputDecoration(
+                                hintText: 'Delivery Address',
+                                contentPadding: const EdgeInsets.all(15),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(30))),
+                            validator: (value) {
+                              if (value.isEmpty) {
+                                return 'Please enter some text';
+                              }
+                              return null;
+                            },
+                            controller: addressController,
+                          ),
+                        ),
+
+                        /*  Padding(
                           padding: EdgeInsets.only(
                               bottom: 15, left: 15, right: 15, top: 10),
                           child: TextFormField(
@@ -210,6 +287,7 @@ class _State extends State<SecondPage> {
                             controller: confirmpasswordController,
                           ),
                         ),
+                    */
                         Container(
                           height: 50,
                           padding:
@@ -253,9 +331,10 @@ class _State extends State<SecondPage> {
                                   },
                                 );
                                 String res = await makePostRequest(
+                                        nameController.text,
                                         emailController.text,
-                                        passwordController.text,
-                                        confirmpasswordController.text)
+                                        phoneController.text,
+                                        addressController.text)
                                     .whenComplete(
                                         () => Navigator.pop(dialogContext));
 
