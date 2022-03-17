@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 
 import 'package:order_app/page/account_details.dart';
 
-class Update_addressPage extends StatefulWidget {
+class Update_namePage extends StatefulWidget {
   @override
-  Update_addressPageState createState() => Update_addressPageState();
+  Update_namePageState createState() => Update_namePageState();
 }
 
-class Update_addressPageState extends State<Update_addressPage> {
-  String address;
-  TextEditingController addressController = TextEditingController();
+class Update_namePageState extends State<Update_namePage> {
+  String name;
+  TextEditingController nameController = TextEditingController();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   void initState() {
@@ -20,18 +20,17 @@ class Update_addressPageState extends State<Update_addressPage> {
   void loaddata() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      address = prefs.getString('address');
-      print(address);
-      addressController.text = address;
+      name = prefs.getString('name');
+      print(name);
+      nameController.text = name;
     });
   }
 
-  updateaddress(address) async {
+  updatename(name) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    //print(address);
 
     setState(() {
-      prefs.setString('address', address);
+      prefs.setString('name', name);
 
       final snackBar = SnackBar(
           backgroundColor: Colors.red, content: Text("Updated successfully"));
@@ -41,7 +40,6 @@ class Update_addressPageState extends State<Update_addressPage> {
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => Account_detailsPage()));
 
-      print(address);
       // addressController.text = address;
     });
   }
@@ -68,9 +66,8 @@ class Update_addressPageState extends State<Update_addressPage> {
           Container(
               padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
               child: TextFormField(
-                  controller: addressController,
-                  // minLines: 8,
-                  maxLines: null,
+                  controller: nameController,
+                  autofocus: true,
                   decoration: InputDecoration(
                     labelStyle: TextStyle(
                       color: Colors.blue,
@@ -88,9 +85,7 @@ class Update_addressPageState extends State<Update_addressPage> {
                     }
                     return null;
                   },
-                  onSaved: (String value) {
-                    // this._data.email = value;
-                  })),
+                  onSaved: (String value) {})),
           SizedBox(height: 10),
           ElevatedButton(
             child: new Text("Update"),
@@ -102,10 +97,7 @@ class Update_addressPageState extends State<Update_addressPage> {
               ),
             ),
             onPressed: () async {
-              updateaddress(addressController.text);
-
-              // Navigator.push(context,
-              //    MaterialPageRoute(builder: (context) => SecondPage()));
+              updatename(nameController.text);
             },
           )
         ]));

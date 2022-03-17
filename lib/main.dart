@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 //import 'package:geocoding/geocoding.dart';
 //import 'package:flutter/services.dart';
-
+import 'dart:io';
 import 'package:shimmer/shimmer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:order_app/auth/login.dart';
@@ -197,256 +197,264 @@ class _State extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0.0,
-          centerTitle: true,
-          title: Column(
-            // crossAxisAlignment: CrossAxisAlignment.s.start,
-            children: [
-              Text("Impel",
-                  style: Theme.of(context)
-                      .textTheme
-                      .headline5
-                      .copyWith(color: Colors.redAccent)),
-              // if (_currentPosition != null)
-              // Text(
-              //    "LAT: ${_currentPosition.latitude}, LNG: ${_currentPosition.longitude}"),
-              Row(
+    return WillPopScope(
+        onWillPop: () {
+          exit(0);
+        },
+        child: Scaffold(
+          appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0.0,
+              centerTitle: true,
+              title: Column(
+                // crossAxisAlignment: CrossAxisAlignment.s.start,
                 children: [
-                  Text(Address),
-                  // Icon(
-                  // Icons.keyboard_arrow_down,
-                  //color: Colors.green,
-                  // size: 30,
-                  // )
+                  Text("Impel",
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline5
+                          .copyWith(color: Colors.redAccent)),
+                  // if (_currentPosition != null)
+                  // Text(
+                  //    "LAT: ${_currentPosition.latitude}, LNG: ${_currentPosition.longitude}"),
+                  Row(
+                    children: [
+                      Text(Address),
+                      // Icon(
+                      // Icons.keyboard_arrow_down,
+                      //color: Colors.green,
+                      // size: 30,
+                      // )
+                    ],
+                  ),
+                  Divider(),
                 ],
-              ),
-              Divider(),
-            ],
-          )),
-      bottomNavigationBar: new BottomNavigationBar(
-          // currentIndex: 0, // this will be set when a new tab is tapped
-          backgroundColor: Colors.white,
-          selectedFontSize: 1.0,
-          unselectedFontSize: 1.0,
-          type: BottomNavigationBarType.fixed,
-          items: [
-            BottomNavigationBarItem(
-              icon: new Stack(children: <Widget>[
-                IconButton(
-                  icon: new Icon(Icons.home),
+              )),
+          bottomNavigationBar: new BottomNavigationBar(
+              // currentIndex: 0, // this will be set when a new tab is tapped
+              backgroundColor: Colors.white,
+              selectedFontSize: 1.0,
+              unselectedFontSize: 1.0,
+              type: BottomNavigationBarType.fixed,
+              items: [
+                BottomNavigationBarItem(
+                  icon: new Stack(children: <Widget>[
+                    IconButton(
+                      icon: new Icon(Icons.home),
 
-                  color: Colors.black,
-                  onPressed: () {
-                    //  setState(() {
-                    //  Navigator.push(context,
-                    //    MaterialPageRoute(builder: (context) => MyApp()));
-                    //});
-                  },
-                  //loadData();
+                      color: Colors.black,
+                      onPressed: () {
+                        //  setState(() {
+                        //  Navigator.push(context,
+                        //    MaterialPageRoute(builder: (context) => MyApp()));
+                        //});
+                      },
+                      //loadData();
+                    ),
+                  ]),
+                  title: Text('Home'),
+                ),
+                BottomNavigationBarItem(
+                  icon: new Stack(children: <Widget>[
+                    IconButton(
+                      icon: new Icon(Icons.search),
+                      color: Colors.black,
+                      onPressed: () {
+                        // menuscreen();
+                      },
+                      //loadData();
+                    ),
+                  ]),
+                  title: Text(''),
+                ),
+                BottomNavigationBarItem(
+                  icon: new Stack(children: <Widget>[
+                    IconButton(
+                      icon: new Icon(Icons.person),
+                      color: Colors.black,
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ProfilePage()));
+                        //  menuscreen();
+                      },
+                      //loadData();
+                    ),
+                  ]),
+                  title: Text(''),
                 ),
               ]),
-              title: Text('Home'),
-            ),
-            BottomNavigationBarItem(
-              icon: new Stack(children: <Widget>[
-                IconButton(
-                  icon: new Icon(Icons.search),
-                  color: Colors.black,
-                  onPressed: () {
-                    // menuscreen();
-                  },
-                  //loadData();
-                ),
-              ]),
-              title: Text(''),
-            ),
-            BottomNavigationBarItem(
-              icon: new Stack(children: <Widget>[
-                IconButton(
-                  icon: new Icon(Icons.person),
-                  color: Colors.black,
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => ProfilePage()));
-                    //  menuscreen();
-                  },
-                  //loadData();
-                ),
-              ]),
-              title: Text(''),
-            ),
-          ]),
-      body:
-          //SingleChildScrollView(
-          Padding(
-        padding: EdgeInsets.all(8.0),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(children: []),
-          SizedBox(height: 20),
-          Text(
-            "Category",
-            style: Theme.of(context)
-                .textTheme
-                .headline6
-                .copyWith(fontWeight: FontWeight.bold, fontSize: 18),
-          ),
-          Container(
-              height: 115,
-              child: ListView.builder(
-                  itemCount: categoryList.length,
-                  shrinkWrap: true,
-                  scrollDirection: Axis.horizontal,
-                  //physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    return Column(children: [
-                      Container(
-                        padding: EdgeInsets.all(17),
-                        margin: EdgeInsets.only(
-                            top: 5, bottom: 2, left: 7, right: 5),
-                        height: 90,
-                        width: 90,
-                        child: InkWell(
-                            onTap: () async {
-                              print("image clicked");
-                              _categoryid = categoryList[index].catid;
-                              _category = categoryList[index].title;
-                              Services.fetchProductsPerId(_categoryid)
-                                  .then((categoriesFromServer) {
-                                setState(() {
-                                  bannerList = categoriesFromServer;
-                                  //print(categoryList.length);
-                                });
-                              }); /*setState(() {
+          body:
+              //SingleChildScrollView(
+              Padding(
+            padding: EdgeInsets.all(8.0),
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Row(children: []),
+              SizedBox(height: 20),
+              Text(
+                "Category",
+                style: Theme.of(context)
+                    .textTheme
+                    .headline6
+                    .copyWith(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+              Container(
+                  height: 115,
+                  child: ListView.builder(
+                      itemCount: categoryList.length,
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      //physics: NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        return Column(children: [
+                          Container(
+                            padding: EdgeInsets.all(17),
+                            margin: EdgeInsets.only(
+                                top: 5, bottom: 2, left: 7, right: 5),
+                            height: 90,
+                            width: 90,
+                            child: InkWell(
+                                onTap: () async {
+                                  print("image clicked");
+                                  _categoryid = categoryList[index].catid;
+                                  _category = categoryList[index].title;
+                                  Services.fetchProductsPerId(_categoryid)
+                                      .then((categoriesFromServer) {
+                                    setState(() {
+                                      bannerList = categoriesFromServer;
+                                      //print(categoryList.length);
+                                    });
+                                  }); /*setState(() {
                                 _categoryid = categoryList[index]
                                     .catid; //if you want to assign the index somewhere to check
                               });*/
-                            },
-                            child: CircleAvatar(
-                              backgroundColor: Colors.transparent,
-                              radius: 70.0,
-                              backgroundImage: NetworkImage(
-                                categoryList[index].imageUrl,
-                              ),
-                            )),
-                      ),
-                      Text(categoryList[index].title,
-                          style: Theme.of(context)
-                              .textTheme
-                              .subtitle2
-                              .copyWith(fontWeight: FontWeight.bold))
-                    ]);
-                  })),
-          SizedBox(height: 30),
-          _category != null
-              ? Text(
-                  '$_category',
-                  style: Theme.of(context)
-                      .textTheme
-                      .headline6
-                      .copyWith(fontWeight: FontWeight.bold, fontSize: 18),
-                )
-              : Text(''),
-          Expanded(
-            child: ListView.builder(
-                padding: EdgeInsets.all(10.0),
-                itemCount: bannerList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Card(
-                    elevation: 4,
-                    child: Container(
-                      padding: EdgeInsets.all(6),
-                      child: Row(
-                        children: <Widget>[
-                          Container(
-                            height: 110,
-                            width: 90,
-                            child: Image.network(
-                              bannerList[index].imageUrl,
-                              // 'https://placeimg.com/250/250/any',
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 5.0,
-                          ),
-                          Flexible(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                MergeSemantics(
-                                  child: Row(
-                                    children: <Widget>[
-                                      Icon(
-                                        Icons.crop_square,
-                                        color: Colors.red,
-                                        size: 18,
-                                      ),
-                                      Flexible(
-                                        child: Text(
-                                          '${bannerList[index].title}',
-                                          overflow: TextOverflow.ellipsis,
-                                          softWrap: true,
-                                          style: TextStyle(
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.w600,
-                                              color: Theme.of(context)
-                                                  .primaryColor),
-                                        ),
-                                      )
-                                    ],
+                                },
+                                child: CircleAvatar(
+                                  backgroundColor: Colors.transparent,
+                                  radius: 70.0,
+                                  backgroundImage: NetworkImage(
+                                    categoryList[index].imageUrl,
                                   ),
+                                )),
+                          ),
+                          Text(categoryList[index].title,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .subtitle2
+                                  .copyWith(fontWeight: FontWeight.bold))
+                        ]);
+                      })),
+              SizedBox(height: 30),
+              _category != null
+                  ? Text(
+                      '$_category',
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline6
+                          .copyWith(fontWeight: FontWeight.bold, fontSize: 18),
+                    )
+                  : Text(''),
+              Expanded(
+                child: ListView.builder(
+                    padding: EdgeInsets.all(10.0),
+                    itemCount: bannerList.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Card(
+                        elevation: 4,
+                        child: Container(
+                          padding: EdgeInsets.all(6),
+                          child: Row(
+                            children: <Widget>[
+                              Container(
+                                height: 110,
+                                width: 90,
+                                child: Image.network(
+                                  bannerList[index].imageUrl,
+                                  // 'https://placeimg.com/250/250/any',
+                                  fit: BoxFit.cover,
                                 ),
-                                SizedBox(height: 5),
-                                Text(
-                                  'Several types are available.',
-                                  maxLines: 1,
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.grey),
-                                ),
-                                SizedBox(height: 5),
-                                Text(
-                                  '500G',
-                                  style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.black),
-                                ),
-                                SizedBox(height: 15),
-                                SizedBox(
-                                    width: 75, // <-- Your width
-                                    height: 30,
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    Product_detailsPage(
-                                                        title: bannerList[index]
-                                                            .title)));
-                                      },
-                                      child: Text('Buy'),
-                                      style: ElevatedButton.styleFrom(
-                                        primary: Colors.amber,
-                                        //change background color of button
-                                        onPrimary: Colors
-                                            .black, //change text color of button
+                              ),
+                              SizedBox(
+                                width: 5.0,
+                              ),
+                              Flexible(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    MergeSemantics(
+                                      child: Row(
+                                        children: <Widget>[
+                                          Icon(
+                                            Icons.crop_square,
+                                            color: Colors.red,
+                                            size: 18,
+                                          ),
+                                          Flexible(
+                                            child: Text(
+                                              '${bannerList[index].title}',
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: true,
+                                              style: TextStyle(
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Theme.of(context)
+                                                      .primaryColor),
+                                            ),
+                                          )
+                                        ],
                                       ),
-                                    ))
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  );
+                                    ),
+                                    SizedBox(height: 5),
+                                    Text(
+                                      'Several types are available.',
+                                      maxLines: 1,
+                                      style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.grey),
+                                    ),
+                                    SizedBox(height: 5),
+                                    Text(
+                                      '500G',
+                                      style: TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w700,
+                                          color: Colors.black),
+                                    ),
+                                    SizedBox(height: 15),
+                                    SizedBox(
+                                        width: 75, // <-- Your width
+                                        height: 30,
+                                        child: ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        Product_detailsPage(
+                                                            title: bannerList[
+                                                                    index]
+                                                                .title)));
+                                          },
+                                          child: Text('Buy'),
+                                          style: ElevatedButton.styleFrom(
+                                            primary: Colors.amber,
+                                            //change background color of button
+                                            onPrimary: Colors
+                                                .black, //change text color of button
+                                          ),
+                                        ))
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      );
 
-                  /* return Card(
+                      /* return Card(
                     child: Padding(
                   padding: EdgeInsets.all(25.0),
                   child: new ListTile(
@@ -487,10 +495,10 @@ class _State extends State<MyApp> {
              
              
              */
-                }),
-          ),
+                    }),
+              ),
 
-          /*for (int i = 0; i < bannerList.length; i++) ...{
+              /*for (int i = 0; i < bannerList.length; i++) ...{
             Container(
                 margin: EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
@@ -546,8 +554,8 @@ class _State extends State<MyApp> {
                   ],
                 ))
           }*/
-        ]),
-      ),
-    );
+            ]),
+          ),
+        ));
   }
 }

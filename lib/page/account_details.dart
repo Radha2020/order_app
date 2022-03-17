@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:order_app/page/update_address.dart';
+import 'package:order_app/page/update_name.dart';
+import 'package:order_app/page/profile_page.dart';
 
 class Account_detailsPage extends StatefulWidget {
   @override
@@ -35,78 +35,95 @@ class Account_detailsPageState extends State<Account_detailsPage> {
   }
 
   void updateaddress() {
-    print("account pressed");
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => Update_addressPage()));
   }
 
+  void updatename() {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => Update_namePage()));
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          toolbarHeight: 20,
-        ),
-        body: Column(children: [
-          Row(children: [
-            Padding(
-                padding: EdgeInsets.fromLTRB(20, 20, 10, 10),
-                child: Text("Account Details",
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline5
-                        .copyWith(color: Colors.redAccent))),
-          ]),
-          Menu(
-            text: "Name:",
-            text1: '$name',
-            press: () {
-              //callpage();
-              //  Navigator.push(context,
-              //           MaterialPageRoute(builder: (context) => Account_detailsPage()));
-            },
-          ),
-          Divider(
-            thickness: 1.0,
-            color: Colors.grey,
-          ),
-          Menu(
-            text: "Email:",
-            text1: '$email',
-            press: () {
-              //callpage();
-              //  Navigator.push(context,
-              //           MaterialPageRoute(builder: (context) => Account_detailsPage()));
-            },
-          ),
-          Divider(
-            thickness: 1.0,
-            color: Colors.grey,
-          ),
-          Menu(
-            text: "Phone:",
-            text1: '$phone',
-            press: () {
-              //callpage();
-              //  Navigator.push(context,
-              //           MaterialPageRoute(builder: (context) => Account_detailsPage()));
-            },
-          ),
-          Divider(
-            thickness: 1.0,
-            color: Colors.grey,
-          ),
-          Menu(
-            text: "Address:",
-            text1: '$address',
-            press: () {
-              updateaddress();
-              //  Navigator.push(context,
-              //           MaterialPageRoute(builder: (context) => Account_detailsPage()));
-            },
-          ),
-        ]));
+    return WillPopScope(
+        onWillPop: () async => false,
+        child: Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              toolbarHeight: 20,
+            ),
+            body: Column(children: [
+              Row(children: [
+                Padding(
+                  padding: EdgeInsets.only(),
+                  child: IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ProfilePage()));
+                      },
+                      icon: Icon(Icons.arrow_back)),
+                ),
+                Padding(
+                    padding: EdgeInsets.fromLTRB(20, 20, 10, 10),
+                    child: Text("Account Details",
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline5
+                            .copyWith(color: Colors.redAccent))),
+              ]),
+              Menu(
+                text: "Name:",
+                text1: '$name',
+                press: () {
+                  updatename();
+                  //  Navigator.push(context,
+                  //           MaterialPageRoute(builder: (context) => Account_detailsPage()));
+                },
+              ),
+              Divider(
+                thickness: 1.0,
+                color: Colors.grey,
+              ),
+              Menu(
+                text: "Email:",
+                text1: '$email',
+                press: () {
+                  //callpage();
+                  //  Navigator.push(context,
+                  //           MaterialPageRoute(builder: (context) => Account_detailsPage()));
+                },
+              ),
+              Divider(
+                thickness: 1.0,
+                color: Colors.grey,
+              ),
+              Menu(
+                text: "Phone:",
+                text1: '$phone',
+                press: () {
+                  //callpage();
+                  //  Navigator.push(context,
+                  //           MaterialPageRoute(builder: (context) => Account_detailsPage()));
+                },
+              ),
+              Divider(
+                thickness: 1.0,
+                color: Colors.grey,
+              ),
+              Menu(
+                text: "Address:",
+                text1: '$address',
+                press: () {
+                  updateaddress();
+                  //  Navigator.push(context,
+                  //           MaterialPageRoute(builder: (context) => Account_detailsPage()));
+                },
+              ),
+            ])));
   }
 }
 

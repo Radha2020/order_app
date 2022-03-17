@@ -295,7 +295,7 @@ class _State extends State<SecondPage> {
                           child: RaisedButton(
                             textColor: Colors.white,
                             color: Colors.deepOrangeAccent,
-                            child: Text('Submit'),
+                            child: Text('Register'),
 
                             onPressed: () async {
                               //       print(nameController.text);

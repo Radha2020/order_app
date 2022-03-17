@@ -230,8 +230,8 @@ class ViewCartState extends State<ViewCart> {
                                   children: [
                                     SizedBox(width: 10, height: 20),
                                     Container(
-                                        height: 75,
-                                        width: 75,
+                                        height: 50,
+                                        width: 50,
                                         decoration: BoxDecoration(
                                             color: Colors.black12,
                                             borderRadius:
