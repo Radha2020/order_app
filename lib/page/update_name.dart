@@ -1,3 +1,4 @@
+import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 
@@ -11,6 +12,8 @@ class Update_namePage extends StatefulWidget {
 class Update_namePageState extends State<Update_namePage> {
   String name;
   TextEditingController nameController = TextEditingController();
+
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   void initState() {
@@ -27,21 +30,16 @@ class Update_namePageState extends State<Update_namePage> {
   }
 
   updatename(name) async {
+    print("name");
+    print(name);
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     setState(() {
       prefs.setString('name', name);
-
-      final snackBar = SnackBar(
-          backgroundColor: Colors.red, content: Text("Updated successfully"));
-      var showSnackBar = ScaffoldMessenger.of(_scaffoldKey.currentContext)
-          .showSnackBar(snackBar);
-
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => Account_detailsPage()));
-
-      // addressController.text = address;
     });
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => Account_detailsPage()));
   }
 
   @override
@@ -53,53 +51,54 @@ class Update_namePageState extends State<Update_namePage> {
           elevation: 0,
           toolbarHeight: 20,
         ),
-        body: Column(children: [
-          Row(children: [
-            Padding(
-                padding: EdgeInsets.fromLTRB(20, 20, 10, 10),
-                child: Text("Edit Address",
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline5
-                        .copyWith(color: Colors.redAccent))),
-          ]),
-          Container(
-              padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-              child: TextFormField(
-                  controller: nameController,
-                  autofocus: true,
-                  decoration: InputDecoration(
-                    labelStyle: TextStyle(
-                      color: Colors.blue,
+        body: new Form(
+            key: _formKey,
+            child: Column(children: [
+              Row(children: [
+                Padding(
+                  padding: EdgeInsets.fromLTRB(20, 20, 10, 10),
+                ),
+              ]),
+              Container(
+                  padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+                  child: TextFormField(
+                    autofocus: true,
+                    decoration: InputDecoration(
+                      labelStyle: TextStyle(
+                        color: Colors.blue,
+                      ),
+                      enabledBorder: new UnderlineInputBorder(
+                          borderSide: new BorderSide(color: Colors.blue)),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.red),
+                      ),
                     ),
-                    enabledBorder: new UnderlineInputBorder(
-                        borderSide: new BorderSide(color: Colors.blue)),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.red),
+                    controller: nameController,
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Please enter some text';
+                      }
+                      return null;
+                    },
+                    //onSaved: (String value) {}
+                  )),
+              SizedBox(height: 10),
+              ElevatedButton(
+                  child: new Text("Update"),
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.red,
+                    onPrimary: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(32.0),
                     ),
                   ),
-                  // controller: emailController,
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Please enter some text';
+                  onPressed: () async {
+                    if (_formKey.currentState.validate()) {
+                      updatename(
+                        nameController.text,
+                      );
                     }
-                    return null;
-                  },
-                  onSaved: (String value) {})),
-          SizedBox(height: 10),
-          ElevatedButton(
-            child: new Text("Update"),
-            style: ElevatedButton.styleFrom(
-              primary: Colors.red,
-              onPrimary: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(32.0),
-              ),
-            ),
-            onPressed: () async {
-              updatename(nameController.text);
-            },
-          )
-        ]));
+                  })
+            ])));
   }
 }

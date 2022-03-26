@@ -10,27 +10,17 @@ import 'package:order_app/page/emptycart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:order_app/auth/registration.dart';
 
+import 'package:order_app/page/product_details.dart';
 import 'package:order_app/auth/registration.dart';
 
-void main() => runApp(App());
-
-class App extends StatelessWidget {
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: ViewCart(),
-    );
-  }
+void main() {
+  //var title;
+  runApp(MaterialApp(
+    home: ViewCart(),
+  ));
 }
 
 class ViewCart extends StatefulWidget {
-  // final String tableno;
-  // ViewCart({Key key, @required this.tableno}) : super(key: key);
   @override
   ViewCartState createState() => ViewCartState();
 }
@@ -55,11 +45,8 @@ class ViewCartState extends State<ViewCart> {
   @override
   void initState() {
     super.initState();
-    // print("second screen");
-    // print(widget.tableno);
-    setState(() {
-      //   tableno = widget.tableno;
-    });
+    setState(() {});
+
     _loaddata();
     _deliverycharge();
     _calcTotal();
@@ -67,20 +54,21 @@ class ViewCartState extends State<ViewCart> {
 
   Future<List<Cart>> _loaddata() async {
     print("loaddata calling");
+
     final Rows = await dbHelper.queryDetails();
-    print('query item details :');
+    print('query loaddata item details :');
     Rows.forEach((row) => print(row));
     cart.clear();
     //  print(Rows);
     Rows.forEach((row) => cart.add(Cart.fromMap(row)));
     print(cart.length);
 
-    if (cart.length == 0) {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => EmptyCart()));
-    } else {
-      return cart;
-    }
+    // if (cart.length == 0) {
+    //  Navigator.push(
+    //    context, MaterialPageRoute(builder: (context) => EmptyCart()));
+    // } else {
+    return cart;
+    // }
   }
 
 /*
@@ -112,6 +100,7 @@ class ViewCartState extends State<ViewCart> {
   }
 
   minus(desc, qty, price) async {
+    print("minus part calling");
     print("desc,qty,price");
     print(desc);
     print(qty);
@@ -153,13 +142,22 @@ class ViewCartState extends State<ViewCart> {
 
   void _deliverycharge() {}
   del(id) async {
-    print("id:");
+    print("del part calling");
     print(id);
     var res = await dbHelper.delete(id).then((value) => count = value);
-    setState(() {
-      _loaddata();
-      _calcTotal();
-    });
+    final allRows = await dbHelper.queryAllRows();
+    print('query all rows:');
+    allRows.forEach((row) => print(row));
+    print(allRows.length);
+    if (allRows.length == 0) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => EmptyCart()));
+    } else {
+      setState(() {
+        _loaddata();
+        _calcTotal();
+      });
+    }
   }
 
   checkRegister() async {
@@ -192,7 +190,22 @@ class ViewCartState extends State<ViewCart> {
             backgroundColor: Colors.transparent,
             elevation: 0.0,
             centerTitle: true,
-            iconTheme: IconThemeData(color: Colors.black),
+            leading: IconButton(
+              icon: Icon(
+                Icons.arrow_back,
+                color: Colors.black,
+              ),
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Product_detailsPage())).then((_) {
+                  setState(() {});
+                });
+              },
+            ),
+
+            //iconTheme: IconThemeData(color: Colors.black),
             title: Column(
               // crossAxisAlignment: CrossAxisAlignment.s.start,
               children: [
@@ -203,12 +216,104 @@ class ViewCartState extends State<ViewCart> {
                         .copyWith(color: Colors.blueGrey)),
               ],
             )),
-        body: SingleChildScrollView(
-            padding: EdgeInsets.all(10),
-            child: Column(children: <Widget>[
-              Container(
+        body: WillPopScope(
+            onWillPop: () async => false,
+            child: SingleChildScrollView(
                 padding: EdgeInsets.all(10),
-                child: FutureBuilder(
+                child: Column(children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.all(10),
+                    child: ListView.separated(
+                        separatorBuilder: (BuildContext context, int index) =>
+                            const Divider(
+                              thickness: 3,
+                            ),
+                        itemCount: cart.length,
+                        //itemExtent: 70.0,
+                        shrinkWrap: true,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Row(children: [
+                            SizedBox(width: 10, height: 20),
+                            Container(
+                                height: 50,
+                                width: 50,
+                                decoration: BoxDecoration(
+                                    color: Colors.black12,
+                                    borderRadius: BorderRadius.circular(10.0)),
+                                child: Image.network(
+                                  cart[index].imageurl,
+                                )),
+                            SizedBox(width: 25),
+                            Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    '${cart[index].desc}',
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.black),
+                                  ),
+                                  SizedBox(height: 5),
+                                  Text(
+                                    '(500 g)\t\t Rs.'
+                                    '${cart[index].price}',
+                                    style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.normal,
+                                        color: Colors.black),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Container(
+                                      height: 40,
+                                      //width: 100,
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: Colors.grey, width: 1.0),
+                                        borderRadius:
+                                            BorderRadius.circular(5.0),
+                                      ),
+                                      child: Row(children: [
+                                        IconButton(
+                                          icon: new Icon(Icons.remove),
+                                          onPressed: () {
+                                            setState(() {
+                                              if (cart[index].quantity > 1) {
+                                                qty = cart[index].quantity;
+                                                desc =
+                                                    cart[index].desc.toString();
+                                                price = cart[index].price;
+
+                                                minus(desc, qty, price);
+                                              } else {
+                                                id = cart[index].id;
+                                                del(id);
+                                              }
+                                            });
+                                          },
+                                          color: Colors.green,
+                                        ),
+                                        Text('${cart[index].quantity}'),
+                                        IconButton(
+                                          icon: new Icon(Icons.add),
+                                          onPressed: () {
+                                            qty = cart[index].quantity;
+                                            desc = cart[index].desc;
+                                            price = cart[index].price;
+                                            print("quantity");
+                                            print(qty);
+                                            add(desc, qty, price);
+                                          },
+                                          color: Colors.green,
+                                        ),
+                                      ])),
+                                ]),
+                            SizedBox(width: 75),
+                            Text('Rs  '
+                                '${cart[index].total}'),
+                          ]);
+                        }),
+                    /* child: FutureBuilder(
                   future: _loaddata(),
                   builder: (context, AsyncSnapshot<List<Cart>> snapshot) {
                     print(snapshot.connectionState);
@@ -415,113 +520,113 @@ class ViewCartState extends State<ViewCart> {
                               }));
                     }
                   },
-                ),
-              ),
-              Divider(thickness: 15, color: Colors.lightGreen),
-              Container(
-                  padding: EdgeInsets.only(left: 20),
-                  child: Row(children: [
-                    SizedBox(
-                      height: 50,
-                    ),
-                    Text(
-                      "Bill Details",
-                      style: Theme.of(context)
-                          .textTheme
-                          .headline6
-                          .copyWith(color: Colors.black),
-                    )
-                  ])),
-              SizedBox(height: 10),
-              Container(
-                  padding: EdgeInsets.only(left: 50),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Text(
-                          "Item Total",
-                          style: Theme.of(context)
-                              .textTheme
-                              .subtitle1
-                              .copyWith(color: Colors.black),
+                ),*/
+                  ),
+                  Divider(thickness: 15, color: Colors.lightGreen),
+                  Container(
+                      padding: EdgeInsets.only(left: 20),
+                      child: Row(children: [
+                        SizedBox(
+                          height: 50,
                         ),
-                        // SizedBox(width: 75),
-                        // Wrap(children: [
-                        // Text("\u20B9"),
                         Text(
-                          '\u20B9' '$_total',
-                          style: Theme.of(context)
-                              .textTheme
-                              .subtitle1
-                              .copyWith(color: Colors.black),
-                        )
-                        // ])
-                      ])),
-              SizedBox(height: 10),
-              Container(
-                  padding: EdgeInsets.only(left: 50),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Text(
-                          "Delivery Fee",
-                          style: Theme.of(context)
-                              .textTheme
-                              .subtitle1
-                              .copyWith(color: Colors.black),
-                        ),
-                        //SizedBox(width: 75),
-                        Text(
-                          '\u20B9' '25.0',
-                          style: Theme.of(context)
-                              .textTheme
-                              .subtitle1
-                              .copyWith(color: Colors.black),
-                        ),
-                      ])),
-              Divider(thickness: 1, color: Colors.grey),
-              Container(
-                  padding: EdgeInsets.only(left: 50),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Text(
-                          "To Pay",
+                          "Bill Details",
                           style: Theme.of(context)
                               .textTheme
                               .headline6
                               .copyWith(color: Colors.black),
-                        ),
-                        //SizedBox(width: 75),
-                        _gtotal != 0
-                            ? Text(
-                                '\u20B9' '$_gtotal',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headline6
-                                    .copyWith(color: Colors.black),
-                              )
-                            : Container(),
+                        )
                       ])),
-              SizedBox(
-                height: 35,
-              ),
-              ElevatedButton(
-                child: new Text("Place Order"),
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.red,
-                  onPrimary: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(32.0),
+                  SizedBox(height: 10),
+                  Container(
+                      padding: EdgeInsets.only(left: 50),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Text(
+                              "Item Total",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .subtitle1
+                                  .copyWith(color: Colors.black),
+                            ),
+                            // SizedBox(width: 75),
+                            // Wrap(children: [
+                            // Text("\u20B9"),
+                            Text(
+                              '\u20B9' '$_total',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .subtitle1
+                                  .copyWith(color: Colors.black),
+                            )
+                            // ])
+                          ])),
+                  SizedBox(height: 10),
+                  Container(
+                      padding: EdgeInsets.only(left: 50),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Text(
+                              "Delivery Fee",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .subtitle1
+                                  .copyWith(color: Colors.black),
+                            ),
+                            //SizedBox(width: 75),
+                            Text(
+                              '\u20B9' '25.0',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .subtitle1
+                                  .copyWith(color: Colors.black),
+                            ),
+                          ])),
+                  Divider(thickness: 1, color: Colors.grey),
+                  Container(
+                      padding: EdgeInsets.only(left: 50),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Text(
+                              "To Pay",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headline6
+                                  .copyWith(color: Colors.black),
+                            ),
+                            //SizedBox(width: 75),
+                            _gtotal != 0
+                                ? Text(
+                                    '\u20B9' '$_gtotal',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headline6
+                                        .copyWith(color: Colors.black),
+                                  )
+                                : Container(),
+                          ])),
+                  SizedBox(
+                    height: 35,
                   ),
-                ),
-                onPressed: () async {
-                  checkRegister();
+                  ElevatedButton(
+                    child: new Text("Place Order"),
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.red,
+                      onPrimary: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(32.0),
+                      ),
+                    ),
+                    onPressed: () async {
+                      checkRegister();
 
-                  // Navigator.push(context,
-                  //    MaterialPageRoute(builder: (context) => SecondPage()));
-                },
-              )
-            ])));
+                      // Navigator.push(context,
+                      //    MaterialPageRoute(builder: (context) => SecondPage()));
+                    },
+                  )
+                ]))));
   }
 }

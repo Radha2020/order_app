@@ -15,6 +15,8 @@ import 'package:order_app/services/Services.dart';
 import 'package:order_app/page/product_details.dart';
 import 'package:order_app/page/profile_page.dart';
 
+import 'package:order_app/page/viewcart.dart';
+import 'package:order_app/page/emptycart.dart';
 //import 'package:geolocator/geolocator.dart';
 
 import 'package:order_app/model/items.dart';
@@ -45,6 +47,7 @@ class _State extends State<MyApp> {
   String Address = 'search';
   String _categoryid;
   String _category;
+  int _counter;
   List<Items> items = List();
   List<Items> filtereditems = List();
   bool _enabled = true;
@@ -52,7 +55,7 @@ class _State extends State<MyApp> {
   List<MyBanner> bannerList = [];
   void initState() {
     super.initState();
-    // checkRegister();
+    checkcart();
 
     Services.fetchCategory().then((categoriesFromServer) {
       setState(() {
@@ -69,6 +72,16 @@ class _State extends State<MyApp> {
         print(bannerList.length);
       });
     });
+  }
+
+  checkcart() async {
+    var count =
+        await dbHelper.queryRowCount().then((value) => _counter = value);
+    // _calcTotal();
+    setState(() {
+      _counter = _counter;
+    });
+    print(_counter);
   }
 
   void checkRegister() async {
@@ -238,20 +251,60 @@ class _State extends State<MyApp> {
               type: BottomNavigationBarType.fixed,
               items: [
                 BottomNavigationBarItem(
-                  icon: new Stack(children: <Widget>[
-                    IconButton(
-                      icon: new Icon(Icons.home),
+                  icon: new Stack(
+                    children: <Widget>[
+                      IconButton(
+                        icon: new Icon(Icons.shopping_cart),
+                        color: Colors.brown,
+                        onPressed: () {
+                          if (_counter == 0) {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => EmptyCart()));
+                          } else {
+//                        loadData(selectedtableno);
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ViewCart()));
 
-                      color: Colors.black,
-                      onPressed: () {
-                        //  setState(() {
-                        //  Navigator.push(context,
-                        //    MaterialPageRoute(builder: (context) => MyApp()));
-                        //});
-                      },
-                      //loadData();
-                    ),
-                  ]),
+                            setState(() {
+                              //  selectedWidgetMarker=WidgetMarker.third;
+                            });
+                          }
+                        },
+                      ),
+                      // new Icon(Icons.shopping_cart,size:35,color: Colors.brown,),
+                      _counter != 0 && _counter != null
+                          ? new Positioned(
+                              right: 0,
+                              child: new Container(
+                                padding: EdgeInsets.all(1),
+                                decoration: new BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                constraints: BoxConstraints(
+                                  minWidth: 12,
+                                  minHeight: 12,
+                                ),
+                                child: new Text(
+                                  '$_counter',
+                                  style: new TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 15,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            )
+                          : new Positioned(
+                              right: 0,
+                              child: new Container(),
+                            )
+                    ],
+                  ),
                   title: Text('Home'),
                 ),
                 BottomNavigationBarItem(

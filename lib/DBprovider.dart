@@ -142,4 +142,41 @@ class DBprovider {
     Database db = await instance.database;
     return await db.delete(table, where: '$columnId = ?', whereArgs: [id]);
   }
+
+  Future<int> getlastrowid() async {
+    Database db = await instance.database;
+    int number = Sqflite.firstIntValue(
+        await db.rawQuery("SELECT MAX($columnId) from $table"));
+    print("last row id");
+    print(number);
+    return number;
+  }
+
+  Future<int> getcount(desc) async {
+    print('db desc');
+    print(desc);
+    String c = desc.toString();
+    print(c);
+
+    Database db = await instance.database;
+    int count = Sqflite.firstIntValue(await db
+        .rawQuery("SELECT COUNT(*) FROM $table WHERE $columnDesc='$c'"));
+    //print("count");
+    //print(count);
+    return count;
+  }
+
+  Future<int> getquantity(desc) async {
+    print('db quantity');
+    print(desc);
+    String c = desc.toString();
+    print(c);
+
+    Database db = await instance.database;
+    int count = Sqflite.firstIntValue(await db
+        .rawQuery("SELECT $columnQuantity FROM $table WHERE $columnDesc='$c'"));
+    //print("count");
+    //print(count);
+    return count;
+  }
 }

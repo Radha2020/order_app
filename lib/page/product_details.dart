@@ -8,6 +8,8 @@ import 'package:order_app/page/viewcart.dart';
 
 import 'package:order_app/DBprovider.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 void main() {
   var title;
   runApp(MaterialApp(
@@ -26,6 +28,7 @@ class Product_detailsPage extends StatefulWidget {
 class Product_detailsPageState extends State<Product_detailsPage> {
   final dbHelper = DBprovider.instance;
   String title;
+  String producttitle;
   List<Items> items = List();
   List<Items> filtereditems = List();
   int quan;
@@ -34,6 +37,7 @@ class Product_detailsPageState extends State<Product_detailsPage> {
   String totPrice = "";
   int _total;
   int _counter;
+  int _count;
   int rowid;
   int id = -1;
   String selectedPrice = "";
@@ -42,23 +46,47 @@ class Product_detailsPageState extends State<Product_detailsPage> {
   String selectedimageurl = '';
   TextEditingController codecontroller = TextEditingController();
 
+  Object get null0 => null;
+
   @override
   void initState() {
-    print(widget.title);
-    dbHelper.deletetable();
+    // print(widget.title);
+    // dbHelper.deletetable();
     // dbHelper.database;
+    checkcart();
     Services.fetchData().then((itemsFromServer) {
       setState(() {
         // print(filtereditems.length);
         items = itemsFromServer;
         filtereditems = items;
-        _counter = 0;
+        //   _counter = 0;
       });
     });
     setState(() {
-      title = widget.title;
+      // title = widget.title;
     });
     // print(this.title);
+  }
+
+  checkcart() async {
+    /*  SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('title', widget.title);
+
+    setState(() {
+      prefs.getString('title');
+      title = title;
+      print('title');
+      print(title);
+    });
+*/
+    var count =
+        await dbHelper.queryRowCount().then((value) => _counter = value);
+    _calcTotal();
+    setState(() {
+      _counter = _counter;
+    });
+    print("cart item total");
+    print(_counter);
   }
 
   void add(desc, _n, price, image) async {
@@ -111,6 +139,27 @@ class Product_detailsPageState extends State<Product_detailsPage> {
     allRows.forEach((row) => print(row));
   }
 
+  checkquantity(desc) async {
+    print("check quantity before add");
+    print(desc);
+    int quantity = await dbHelper.getquantity(desc);
+    print(quantity);
+    // dbHelper.getquantity(selectedItem);
+    if (quantity == null) {
+      setState(() {
+        print("quantity null");
+        _n = null;
+      });
+    } else {
+      setState(() {
+        print("quantity existed");
+        _n = quantity;
+      });
+    }
+    print(_n);
+    return _n;
+  }
+
   submitData() async {
     //final id = await dbHelper.getlastrowid().then((value) => rowid = value);
     setState(() {
@@ -139,24 +188,26 @@ class Product_detailsPageState extends State<Product_detailsPage> {
       DBprovider.columnQuantity: _n,
       DBprovider.columnTotal: total
     };
-    // int c = await dbHelper.getcount(selectedCode, rowid);
+    int c = await dbHelper.getcount(selectedItem);
 
-    //var r= dbHelper.getcount(selectedCode).then((value) => c=value);
-    //  print("count");
-    // print(c);
+    // var r = dbHelper.getcount(selectedCode).then((value) => _count = value);
+    print("count");
+    print(c);
     //int count=r;
-    // if (c == 0) {
-    Cart cart = Cart.fromMap(row);
-    print(cart.code);
-    final id = await dbHelper.insert(cart);
-    print('new row inserted');
-    //final id = await dbHelper.insert(row);
-    print('inserted row id: $id');
-    // } else {
-    // print(row);
-    //  print("already existed");
-    // dbHelper.update(row, tableid);
-    // }
+    if (c == 0) {
+      Cart cart = Cart.fromMap(row);
+      print(cart.code);
+      final id = await dbHelper.insert(cart);
+      print('new row inserted');
+      //final id = await dbHelper.insert(row);
+      print('inserted row id: $id');
+    } else {
+      print(row);
+      print("already existed");
+      print("get the quantity");
+
+      // dbHelper.update(row, selectedItem);
+    }
 
     var count =
         await dbHelper.queryRowCount().then((value) => _counter = value);
@@ -184,17 +235,17 @@ class Product_detailsPageState extends State<Product_detailsPage> {
         appBar: AppBar(
             backgroundColor: Colors.transparent,
             elevation: 0.0,
-            centerTitle: true,
+            // centerTitle: true,
             title: Column(
-              // crossAxisAlignment: CrossAxisAlignment.s.start,
-              children: [
+                // crossAxisAlignment: CrossAxisAlignment.s.start,
+                /*children: [
                 Text('$title',
                     style: Theme.of(context)
                         .textTheme
                         .headline5
                         .copyWith(color: Colors.redAccent)),
-              ],
-            )),
+              ],*/
+                )),
         bottomNavigationBar: new BottomNavigationBar(
             // currentIndex: 0, // this will be set when a new tab is tapped
             backgroundColor: Colors.white,
@@ -362,9 +413,14 @@ class Product_detailsPageState extends State<Product_detailsPage> {
                                                 print(items[index].code);
                                                 // print("tableid");
                                                 print("quan");
-                                                print(quan);
+                                                //   print(quan);
 
-                                                if (quan == null) {
+                                                checkquantity(
+                                                    filtereditems[index].desc);
+                                                await Future.delayed(
+                                                    const Duration(
+                                                        milliseconds: 500));
+                                                if (_n == null) {
                                                   print("if part");
                                                   _n = 1;
                                                   totPrice =
@@ -386,7 +442,8 @@ class Product_detailsPageState extends State<Product_detailsPage> {
                                                       .showSnackBar(snackBar);
                                                   //               _showScaffold("This is a SnackBar.");
                                                   print("else part");
-                                                  _n = quan;
+                                                  print("quantity later");
+                                                  print(_n);
                                                 }
                                                 setState(() {
                                                   filtereditems[index]

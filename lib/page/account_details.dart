@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:order_app/page/update_address.dart';
 import 'package:order_app/page/update_name.dart';
+import 'package:order_app/page/update_email.dart';
+import 'package:order_app/page/update_phone.dart';
 import 'package:order_app/page/profile_page.dart';
 
 class Account_detailsPage extends StatefulWidget {
@@ -42,6 +44,16 @@ class Account_detailsPageState extends State<Account_detailsPage> {
   void updatename() {
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => Update_namePage()));
+  }
+
+  void updateemail() {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => Update_emailPage()));
+  }
+
+  void updatephone() {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => Update_phonePage()));
   }
 
   @override
@@ -92,7 +104,7 @@ class Account_detailsPageState extends State<Account_detailsPage> {
                 text: "Email:",
                 text1: '$email',
                 press: () {
-                  //callpage();
+                  updateemail();
                   //  Navigator.push(context,
                   //           MaterialPageRoute(builder: (context) => Account_detailsPage()));
                 },
@@ -105,7 +117,7 @@ class Account_detailsPageState extends State<Account_detailsPage> {
                 text: "Phone:",
                 text1: '$phone',
                 press: () {
-                  //callpage();
+                  updatephone();
                   //  Navigator.push(context,
                   //           MaterialPageRoute(builder: (context) => Account_detailsPage()));
                 },
