@@ -13,6 +13,8 @@ import 'package:order_app/auth/registration.dart';
 import 'package:order_app/page/product_details.dart';
 import 'package:order_app/auth/registration.dart';
 
+//import 'package:pay/pay.dart';
+
 void main() {
   //var title;
   runApp(MaterialApp(
@@ -20,6 +22,14 @@ void main() {
   ));
 }
 
+/*const _paymentItems = [
+  PaymentItem(
+    label: 'Total',
+    amount: '99.99',
+    status: PaymentItemStatus.final_price,
+  )
+];
+*/
 class ViewCart extends StatefulWidget {
   @override
   ViewCartState createState() => ViewCartState();
@@ -611,7 +621,22 @@ class ViewCartState extends State<ViewCart> {
                   SizedBox(
                     height: 35,
                   ),
-                  ElevatedButton(
+                  /*                GooglePayButton(
+                    paymentConfigurationAsset:
+                        'default_payment_profile_google_pay.json',
+                    paymentItems: _paymentItems,
+                    style: GooglePayButtonStyle.black,
+                    type: GooglePayButtonType.pay,
+                    margin: const EdgeInsets.only(top: 15.0),
+                    onPaymentResult: (data) {
+                      print(data);
+                    },
+                    loadingIndicator: const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+*/
+                  /* ElevatedButton(
                     child: new Text("Place Order"),
                     style: ElevatedButton.styleFrom(
                       primary: Colors.red,
@@ -627,6 +652,7 @@ class ViewCartState extends State<ViewCart> {
                       //    MaterialPageRoute(builder: (context) => SecondPage()));
                     },
                   )
+               */
                 ]))));
   }
 }

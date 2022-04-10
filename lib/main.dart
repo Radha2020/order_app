@@ -245,98 +245,102 @@ class _State extends State<MyApp> {
               )),
           bottomNavigationBar: new BottomNavigationBar(
               // currentIndex: 0, // this will be set when a new tab is tapped
+
               backgroundColor: Colors.white,
               selectedFontSize: 1.0,
               unselectedFontSize: 1.0,
               type: BottomNavigationBarType.fixed,
               items: [
                 BottomNavigationBarItem(
-                  icon: new Stack(
-                    children: <Widget>[
-                      IconButton(
-                        icon: new Icon(Icons.shopping_cart),
-                        color: Colors.brown,
-                        onPressed: () {
-                          if (_counter == 0) {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => EmptyCart()));
-                          } else {
+                    icon: new Stack(
+                      children: <Widget>[
+                        IconButton(
+                          icon: new Icon(Icons.shopping_cart),
+                          color: Colors.brown,
+                          onPressed: () {
+                            if (_counter == 0) {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => EmptyCart()));
+                            } else {
 //                        loadData(selectedtableno);
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ViewCart()));
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ViewCart()));
 
-                            setState(() {
-                              //  selectedWidgetMarker=WidgetMarker.third;
-                            });
-                          }
-                        },
-                      ),
-                      // new Icon(Icons.shopping_cart,size:35,color: Colors.brown,),
-                      _counter != 0 && _counter != null
-                          ? new Positioned(
-                              right: 0,
-                              child: new Container(
-                                padding: EdgeInsets.all(1),
-                                decoration: new BoxDecoration(
-                                  color: Colors.red,
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                constraints: BoxConstraints(
-                                  minWidth: 12,
-                                  minHeight: 12,
-                                ),
-                                child: new Text(
-                                  '$_counter',
-                                  style: new TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 15,
+                              setState(() {
+                                //  selectedWidgetMarker=WidgetMarker.third;
+                              });
+                            }
+                          },
+                        ),
+                        // new Icon(Icons.shopping_cart,size:35,color: Colors.brown,),
+                        _counter != 0 && _counter != null
+                            ? new Positioned(
+                                right: 0,
+                                child: new Container(
+                                  padding: EdgeInsets.all(1),
+                                  decoration: new BoxDecoration(
+                                    color: Colors.red,
+                                    borderRadius: BorderRadius.circular(6),
                                   ),
-                                  textAlign: TextAlign.center,
+                                  constraints: BoxConstraints(
+                                    minWidth: 12,
+                                    minHeight: 12,
+                                  ),
+                                  child: new Text(
+                                    '$_counter',
+                                    style: new TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 15,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
                                 ),
-                              ),
-                            )
-                          : new Positioned(
-                              right: 0,
-                              child: new Container(),
-                            )
-                    ],
-                  ),
-                  title: Text('Home'),
-                ),
-                BottomNavigationBarItem(
-                  icon: new Stack(children: <Widget>[
-                    IconButton(
-                      icon: new Icon(Icons.search),
-                      color: Colors.black,
-                      onPressed: () {
-                        // menuscreen();
-                      },
-                      //loadData();
+                              )
+                            : new Positioned(
+                                right: 0,
+                                child: new Container(),
+                              )
+                      ],
                     ),
-                  ]),
-                  title: Text(''),
-                ),
-                BottomNavigationBarItem(
-                  icon: new Stack(children: <Widget>[
-                    IconButton(
-                      icon: new Icon(Icons.person),
-                      color: Colors.black,
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ProfilePage()));
-                        //  menuscreen();
-                      },
-                      //loadData();
+                    label: ''
+                    //title: Text('Home'),
                     ),
-                  ]),
-                  title: Text(''),
-                ),
+                BottomNavigationBarItem(
+                    icon: new Stack(children: <Widget>[
+                      IconButton(
+                        icon: new Icon(Icons.search),
+                        color: Colors.black,
+                        onPressed: () {
+                          // menuscreen();
+                        },
+                        //loadData();
+                      ),
+                    ]),
+                    label: ''
+                    // title: Text(''),
+                    ),
+                BottomNavigationBarItem(
+                    icon: new Stack(children: <Widget>[
+                      IconButton(
+                        icon: new Icon(Icons.person),
+                        color: Colors.black,
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ProfilePage()));
+                          //  menuscreen();
+                        },
+                        //loadData();
+                      ),
+                    ]),
+                    label: ''
+                    //  title: Text(''),
+                    ),
               ]),
           body:
               //SingleChildScrollView(

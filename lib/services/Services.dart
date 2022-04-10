@@ -28,7 +28,10 @@ class Services {
 
   static Future<List<Category>> fetchCategory() async {
     print("fetching CategoryImages");
-    String url = 'http://hospital.impelcreations.co.in/hosp/Api/flutcategories';
+    // String url = 'http://hospital.impelcreations.co.in/hosp/Api/flutcategories';
+
+    String url = 'http://glenshop.000webhostapp.com/hosp/Api/flutcategories';
+
     //  String url = 'http://192.168.43.63/hosp/Api/flutwaiters';
 
     Map<String, String> headers = {"Content-type": "application/json"};

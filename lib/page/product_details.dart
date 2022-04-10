@@ -253,99 +253,103 @@ class Product_detailsPageState extends State<Product_detailsPage> {
             unselectedFontSize: 1.0,
             items: [
               BottomNavigationBarItem(
-                icon: new Stack(children: <Widget>[
-                  IconButton(
-                    icon: new Icon(Icons.home),
-                    color: Colors.brown,
-                    onPressed: () {
-                      setState(() {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => MyApp()));
-                      });
-                    },
-                    //loadData();
+                  icon: new Stack(children: <Widget>[
+                    IconButton(
+                      icon: new Icon(Icons.home),
+                      color: Colors.brown,
+                      onPressed: () {
+                        setState(() {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) => MyApp()));
+                        });
+                      },
+                      //loadData();
+                    ),
+                  ]),
+                  label: ''
+                  //  title: Text(''),
                   ),
-                ]),
-                title: Text(''),
-              ),
               BottomNavigationBarItem(
-                title: Text(''),
-                icon: _total != null
-                    ? Badge(
-                        shape: BadgeShape.square,
-                        borderRadius: BorderRadius.circular(5),
-                        badgeColor: Colors.red,
-                        position: BadgePosition.topEnd(top: -12, end: -20),
-                        padding: EdgeInsets.all(2),
-                        badgeContent: Text(
-                          'Rs.' '$_total',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        child: Text(
+
+                  // title: Text(''),
+                  icon: _total != null
+                      ? Badge(
+                          shape: BadgeShape.square,
+                          borderRadius: BorderRadius.circular(5),
+                          badgeColor: Colors.red,
+                          position: BadgePosition.topEnd(top: -12, end: -20),
+                          padding: EdgeInsets.all(2),
+                          badgeContent: Text(
+                            'Rs.' '$_total',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          child: Text(
+                            'Total',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        )
+                      : Text(
                           'Total',
                           style: TextStyle(
                               color: Colors.black, fontWeight: FontWeight.bold),
                         ),
-                      )
-                    : Text(
-                        'Total',
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.bold),
-                      ),
-              ),
+                  label: ''),
               BottomNavigationBarItem(
-                icon: new Stack(
-                  children: <Widget>[
-                    IconButton(
-                      icon: new Icon(Icons.shopping_cart),
-                      color: Colors.brown,
-                      onPressed: () {
+                  icon: new Stack(
+                    children: <Widget>[
+                      IconButton(
+                        icon: new Icon(Icons.shopping_cart),
+                        color: Colors.brown,
+                        onPressed: () {
 //                        loadData(selectedtableno);
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ViewCart()));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ViewCart()));
 
-                        setState(() {
-                          //  selectedWidgetMarker=WidgetMarker.third;
-                        });
-                      },
-                    ),
-                    // new Icon(Icons.shopping_cart,size:35,color: Colors.brown,),
-                    _counter != 0 && _counter != null
-                        ? new Positioned(
-                            right: 0,
-                            child: new Container(
-                              padding: EdgeInsets.all(1),
-                              decoration: new BoxDecoration(
-                                color: Colors.red,
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              constraints: BoxConstraints(
-                                minWidth: 12,
-                                minHeight: 12,
-                              ),
-                              child: new Text(
-                                '$_counter',
-                                style: new TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 15,
+                          setState(() {
+                            //  selectedWidgetMarker=WidgetMarker.third;
+                          });
+                        },
+                      ),
+                      // new Icon(Icons.shopping_cart,size:35,color: Colors.brown,),
+                      _counter != 0 && _counter != null
+                          ? new Positioned(
+                              right: 0,
+                              child: new Container(
+                                padding: EdgeInsets.all(1),
+                                decoration: new BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(6),
                                 ),
-                                textAlign: TextAlign.center,
+                                constraints: BoxConstraints(
+                                  minWidth: 12,
+                                  minHeight: 12,
+                                ),
+                                child: new Text(
+                                  '$_counter',
+                                  style: new TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 15,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
                               ),
-                            ),
-                          )
-                        : new Positioned(
-                            right: 0,
-                            child: new Container(),
-                          )
-                  ],
-                ),
-                title: Text(''),
-              ),
+                            )
+                          : new Positioned(
+                              right: 0,
+                              child: new Container(),
+                            )
+                    ],
+                  ),
+                  label: ''
+                  // title: Text(''),
+                  ),
             ]),
         body: Padding(
             padding: EdgeInsets.all(8.0),
