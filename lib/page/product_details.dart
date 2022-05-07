@@ -6,7 +6,7 @@ import 'package:order_app/model/cart.dart';
 import 'package:order_app/main.dart';
 import 'package:order_app/page/viewcart.dart';
 
-import 'package:order_app/DBprovider.dart';
+import 'package:order_app/DBHelp.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -26,7 +26,7 @@ class Product_detailsPage extends StatefulWidget {
 }
 
 class Product_detailsPageState extends State<Product_detailsPage> {
-  final dbHelper = DBprovider.instance;
+  final dbHelper = DBHelp.instance;
   String title;
   String producttitle;
   List<Items> items = List();
@@ -43,6 +43,7 @@ class Product_detailsPageState extends State<Product_detailsPage> {
   String selectedPrice = "";
   String selectedItem = "";
   String selectedCode = '';
+  String selectedUnit = '';
   String selectedimageurl = '';
   TextEditingController codecontroller = TextEditingController();
 
@@ -89,15 +90,16 @@ class Product_detailsPageState extends State<Product_detailsPage> {
     print(_counter);
   }
 
-  void add(desc, _n, price, image) async {
+  void add(desc, unit, _n, price, image) async {
     var tot = _n * int.parse(price);
     print("total");
     print(tot);
     Map<String, dynamic> row = {
-      DBprovider.columnImage: image,
-      DBprovider.columnDesc: desc,
-      DBprovider.columnQuantity: _n,
-      DBprovider.columnTotal: tot,
+      DBHelp.columnImage: image,
+      DBHelp.columnDesc: desc,
+      DBHelp.columnUnit: unit,
+      DBHelp.columnQuantity: _n,
+      DBHelp.columnTotal: tot,
     };
     dbHelper.update(row, desc);
     _calcTotal();
@@ -107,14 +109,15 @@ class Product_detailsPageState extends State<Product_detailsPage> {
     allRows.forEach((row) => print(row));
   }
 
-  void minus(desc, _n, price) async {
+  void minus(desc, unit, _n, price) async {
     print("minus part");
     print(desc);
     var tot = _n * int.parse(price);
     Map<String, dynamic> row = {
-      DBprovider.columnDesc: desc,
-      DBprovider.columnQuantity: _n,
-      DBprovider.columnTotal: tot,
+      DBHelp.columnDesc: desc,
+      DBHelp.columnUnit: unit,
+      DBHelp.columnQuantity: _n,
+      DBHelp.columnTotal: tot,
     };
     dbHelper.update(row, desc);
     _calcTotal();
@@ -170,6 +173,8 @@ class Product_detailsPageState extends State<Product_detailsPage> {
       print(selectedItem);
       print("quantity");
       print(_n);
+      print("selectedunit");
+      print(selectedUnit);
       print(selectedimageurl);
     });
     // print(id);
@@ -181,12 +186,13 @@ class Product_detailsPageState extends State<Product_detailsPage> {
     print("total");
     print(total);
     Map<String, dynamic> row = {
-      DBprovider.columnCode: selectedCode,
-      DBprovider.columnImage: selectedimageurl,
-      DBprovider.columnDesc: selectedItem,
-      DBprovider.columnPrice: price,
-      DBprovider.columnQuantity: _n,
-      DBprovider.columnTotal: total
+      DBHelp.columnCode: selectedCode,
+      DBHelp.columnImage: selectedimageurl,
+      DBHelp.columnDesc: selectedItem,
+      DBHelp.columnUnit: selectedUnit,
+      DBHelp.columnPrice: price,
+      DBHelp.columnQuantity: _n,
+      DBHelp.columnTotal: total
     };
     int c = await dbHelper.getcount(selectedItem);
 
@@ -351,204 +357,256 @@ class Product_detailsPageState extends State<Product_detailsPage> {
                   // title: Text(''),
                   ),
             ]),
-        body: Padding(
-            padding: EdgeInsets.all(8.0),
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Row(children: [
-                Expanded(
-                  child: TextFormField(
-                    onChanged: (string) {
-                      setState(() {
-                        filtereditems = items
-                            .where((i) =>
-                                i.code
-                                    .toLowerCase()
-                                    .contains(string.toLowerCase()) ||
-                                i.desc
-                                    .toLowerCase()
-                                    .contains(string.toLowerCase()))
-                            .toList();
-                      });
-                    },
-                    //  controller: editingController,
-                    controller: codecontroller,
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.all(15.0),
-                      hintText: 'name',
-                      prefixIcon: Icon(Icons.search),
-                    ),
-                  ),
-                )
-              ]),
-              new Expanded(
-                child: ListView.builder(
-                    padding: EdgeInsets.all(10.0),
-                    itemCount: filtereditems.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Card(
-                          child: Padding(
-                        padding: EdgeInsets.all(10.0),
-                        child: new ListTile(
-                            title: Text('${filtereditems[index].desc}'),
-                            subtitle: Row(
-                              children: <Widget>[
-                                Text('Rs:'),
-                                Text('${filtereditems[index].price}'),
-                              ],
+        body: WillPopScope(
+            onWillPop: () async => false,
+            child: Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(children: [
+                        Expanded(
+                          child: TextFormField(
+                            onChanged: (string) {
+                              setState(() {
+                                filtereditems = items
+                                    .where((i) =>
+                                        i.code
+                                            .toLowerCase()
+                                            .contains(string.toLowerCase()) ||
+                                        i.desc
+                                            .toLowerCase()
+                                            .contains(string.toLowerCase()))
+                                    .toList();
+                              });
+                            },
+                            //  controller: editingController,
+                            controller: codecontroller,
+                            decoration: InputDecoration(
+                              contentPadding: EdgeInsets.all(15.0),
+                              hintText: 'name',
+                              prefixIcon: Icon(Icons.search),
                             ),
-                            leading: Image.network(
-                              filtereditems[index].imageUrl,
-                              // 'https://placeimg.com/250/250/any',
-                              fit: BoxFit.cover,
-                            ),
-                            // Text('${filtereditems[index].code}'),
-                            // ),
-                            trailing:
-                                // code=snapshot.data[index].code
-                                filtereditems[index].ShouldVisible
-                                    ? Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: <Widget>[
-                                            RaisedButton(
-                                              color: Colors.green,
-                                              onPressed: () async {
-                                                print("code value");
-                                                print(items[index].code);
-                                                // print("tableid");
-                                                print("quan");
-                                                //   print(quan);
+                          ),
+                        )
+                      ]),
+                      new Expanded(
+                        child: ListView.builder(
+                            padding: EdgeInsets.all(10.0),
+                            itemCount: filtereditems.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Card(
+                                  child: Padding(
+                                padding: EdgeInsets.all(10.0),
+                                child: new ListTile(
+                                    title: Text('${filtereditems[index].desc}'),
+                                    subtitle: Row(
+                                      children: <Widget>[
+                                        Text('['),
+                                        Text('${filtereditems[index].unit}'),
+                                        Text(']\t\t'),
+                                        Text('Rs:'),
+                                        Text('${filtereditems[index].price}'),
+                                      ],
+                                    ),
+                                    leading: Image.network(
+                                      filtereditems[index].imageUrl,
+                                      // 'https://placeimg.com/250/250/any',
+                                      fit: BoxFit.cover,
+                                    ),
+                                    // Text('${filtereditems[index].code}'),
+                                    // ),
+                                    trailing:
+                                        // code=snapshot.data[index].code
+                                        filtereditems[index].ShouldVisible
+                                            ? Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: <Widget>[
+                                                    RaisedButton(
+                                                      color: Colors.green,
+                                                      onPressed: () async {
+                                                        print("code value");
+                                                        print(
+                                                            items[index].code);
+                                                        // print("tableid");
+                                                        print("quan");
+                                                        //   print(quan);
 
-                                                checkquantity(
-                                                    filtereditems[index].desc);
-                                                await Future.delayed(
-                                                    const Duration(
-                                                        milliseconds: 500));
-                                                if (_n == null) {
-                                                  print("if part");
-                                                  _n = 1;
-                                                  totPrice =
-                                                      filtereditems[index]
-                                                          .price;
-                                                  filtereditems[index].isAdded =
-                                                      false;
-                                                } else {
-                                                  final snackBar = SnackBar(
-                                                    backgroundColor:
-                                                        Colors.green,
-                                                    content: Text(
-                                                      'Already Added in the Cart!!',
+                                                        checkquantity(
+                                                            filtereditems[index]
+                                                                .desc);
+                                                        await Future.delayed(
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    500));
+                                                        if (_n == null) {
+                                                          print("if part");
+                                                          _n = 1;
+                                                          totPrice =
+                                                              filtereditems[
+                                                                      index]
+                                                                  .price;
+                                                          filtereditems[index]
+                                                              .isAdded = false;
+                                                        } else {
+                                                          final snackBar =
+                                                              SnackBar(
+                                                            backgroundColor:
+                                                                Colors.green,
+                                                            content: Text(
+                                                              'Already Added in the Cart!!',
+                                                            ),
+                                                            duration: Duration(
+                                                                seconds: 2),
+                                                          );
+                                                          Scaffold.of(context)
+                                                              .showSnackBar(
+                                                                  snackBar);
+                                                          //               _showScaffold("This is a SnackBar.");
+                                                          print("else part");
+                                                          print(
+                                                              "quantity later");
+                                                          print(_n);
+                                                        }
+                                                        setState(() {
+                                                          filtereditems[index]
+                                                                  .ShouldVisible =
+                                                              false;
+                                                          selectedItem =
+                                                              filtereditems[
+                                                                      index]
+                                                                  .desc;
+
+                                                          selectedUnit =
+                                                              filtereditems[
+                                                                      index]
+                                                                  .unit;
+
+                                                          selectedPrice =
+                                                              filtereditems[
+                                                                      index]
+                                                                  .price;
+                                                          selectedCode =
+                                                              filtereditems[
+                                                                      index]
+                                                                  .code;
+                                                          filtereditems[index]
+                                                              .counter = _n;
+                                                          selectedimageurl =
+                                                              filtereditems[
+                                                                      index]
+                                                                  .imageUrl;
+                                                        });
+
+                                                        submitData();
+                                                      },
+                                                      child: new Text('ADD',
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold)),
+                                                      textColor: Colors.white,
+                                                    )
+                                                  ])
+                                            //
+                                            : Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: <Widget>[
+                                                    IconButton(
+                                                      icon: new Icon(
+                                                          Icons.remove),
+                                                      onPressed: () {
+                                                        // print("id");
+                                                        // print(tableid);
+
+                                                        setState(() {
+                                                          if (filtereditems[
+                                                                      index]
+                                                                  .counter >
+                                                              1) {
+                                                            print("counter");
+                                                            print(filtereditems[
+                                                                    index]
+                                                                .counter);
+
+                                                            filtereditems[index]
+                                                                .counter--;
+                                                            _n = filtereditems[
+                                                                    index]
+                                                                .counter;
+                                                            minus(
+                                                              filtereditems[
+                                                                      index]
+                                                                  .desc,
+                                                              filtereditems[
+                                                                      index]
+                                                                  .unit,
+                                                              _n,
+                                                              filtereditems[
+                                                                      index]
+                                                                  .price,
+                                                            );
+                                                          } else {
+                                                            print(
+                                                                " less counter");
+                                                            print(filtereditems[
+                                                                    index]
+                                                                .counter);
+                                                            setState(() {
+                                                              filtereditems[
+                                                                          index]
+                                                                      .ShouldVisible =
+                                                                  true;
+                                                              filtereditems[
+                                                                          index]
+                                                                      .isAdded =
+                                                                  true;
+                                                            });
+                                                            del(filtereditems[
+                                                                    index]
+                                                                .desc);
+                                                          }
+                                                        });
+                                                      },
+                                                      color: Colors.green,
                                                     ),
-                                                    duration:
-                                                        Duration(seconds: 2),
-                                                  );
-                                                  Scaffold.of(context)
-                                                      .showSnackBar(snackBar);
-                                                  //               _showScaffold("This is a SnackBar.");
-                                                  print("else part");
-                                                  print("quantity later");
-                                                  print(_n);
-                                                }
-                                                setState(() {
-                                                  filtereditems[index]
-                                                      .ShouldVisible = false;
-                                                  selectedItem =
-                                                      filtereditems[index].desc;
-                                                  selectedPrice =
-                                                      filtereditems[index]
-                                                          .price;
-                                                  selectedCode =
-                                                      filtereditems[index].code;
-                                                  filtereditems[index].counter =
-                                                      _n;
-                                                  selectedimageurl =
-                                                      filtereditems[index]
-                                                          .imageUrl;
-                                                });
-
-                                                submitData();
-                                              },
-                                              child: new Text('ADD',
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold)),
-                                              textColor: Colors.white,
-                                            )
-                                          ])
-                                    //
-                                    : Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: <Widget>[
-                                            IconButton(
-                                              icon: new Icon(Icons.remove),
-                                              onPressed: () {
-                                                // print("id");
-                                                // print(tableid);
-
-                                                setState(() {
-                                                  if (filtereditems[index]
-                                                          .counter >
-                                                      1) {
-                                                    print("counter");
-                                                    print(filtereditems[index]
-                                                        .counter);
-
-                                                    filtereditems[index]
-                                                        .counter--;
-                                                    _n = filtereditems[index]
-                                                        .counter;
-                                                    minus(
-                                                      filtereditems[index].desc,
-                                                      _n,
-                                                      filtereditems[index]
-                                                          .price,
-                                                    );
-                                                  } else {
-                                                    print(" less counter");
-                                                    print(filtereditems[index]
-                                                        .counter);
-                                                    setState(() {
-                                                      filtereditems[index]
-                                                          .ShouldVisible = true;
-                                                      filtereditems[index]
-                                                          .isAdded = true;
-                                                    });
-                                                    del(filtereditems[index]
-                                                        .desc);
-                                                  }
-                                                });
-                                              },
-                                              color: Colors.green,
-                                            ),
-                                            Text(filtereditems[index]
-                                                .counter
-                                                .toString()),
-                                            IconButton(
-                                              icon: new Icon(Icons.add),
-                                              onPressed: () {
-                                                setState(() {
-                                                  _id = index;
-                                                  filtereditems[index]
-                                                      .counter++;
-                                                  _n = filtereditems[index]
-                                                      .counter;
-                                                  print("quan");
-                                                  print(_n);
-                                                  add(
-                                                      filtereditems[index].desc,
-                                                      _n,
-                                                      filtereditems[index]
-                                                          .price,
-                                                      filtereditems[index]
-                                                          .imageUrl);
-                                                });
-                                              },
-                                              color: Colors.green,
-                                            )
-                                          ])),
-                      ));
-                    }),
-              ),
-            ])));
+                                                    Text(filtereditems[index]
+                                                        .counter
+                                                        .toString()),
+                                                    IconButton(
+                                                      icon: new Icon(Icons.add),
+                                                      onPressed: () {
+                                                        setState(() {
+                                                          _id = index;
+                                                          filtereditems[index]
+                                                              .counter++;
+                                                          _n = filtereditems[
+                                                                  index]
+                                                              .counter;
+                                                          print("quan");
+                                                          print(_n);
+                                                          add(
+                                                              filtereditems[
+                                                                      index]
+                                                                  .desc,
+                                                              filtereditems[
+                                                                      index]
+                                                                  .unit,
+                                                              _n,
+                                                              filtereditems[
+                                                                      index]
+                                                                  .price,
+                                                              filtereditems[
+                                                                      index]
+                                                                  .imageUrl);
+                                                        });
+                                                      },
+                                                      color: Colors.green,
+                                                    )
+                                                  ])),
+                              ));
+                            }),
+                      ),
+                    ]))));
   }
 }

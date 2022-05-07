@@ -5,12 +5,14 @@ import 'package:order_app/model/mybanner.dart';
 import 'package:order_app/model/category.dart';
 
 import 'package:order_app/model/items.dart';
-import 'package:order_app/DBprovider.dart';
+import 'package:order_app/DBHelp.dart';
 
 class Services {
   static Future<List<MyBanner>> fetchBanner() async {
     print("fetching BannerImages");
-    String url = 'http://hospital.impelcreations.co.in/hosp/Api/flutbanners';
+//    String url = 'http://hospital.impelcreations.co.in/hosp/Api/flutbanners';
+
+    String url = 'http://glenshop.000webhostapp.com/hosp/Api/flutbanners';
 
     Map<String, String> headers = {"Content-type": "application/json"};
     try {
@@ -75,12 +77,18 @@ class Services {
 
   static Future<List<Items>> fetchData() async {
     print("fetching data");
-    String url = 'http://hospital.impelcreations.co.in/hosp/Api/flutitems';
+    // String url = 'http://hospital.impelcreations.co.in/hosp/Api/flutitems';
+
+    String url = 'http://glenshop.000webhostapp.com/hosp/Api/flutitems';
+
     Map<String, String> headers = {"Content-type": "application/json"};
     try {
       http.Response response = await http.get(url, headers: headers);
       if (response.statusCode == 200) {
-        print(response.toString());
+        var jsonBody = response.body;
+        var jsonData = json.decode(jsonBody);
+        print(jsonData);
+        //print(response.toString());
         List<Items> items = parseItems(response.body);
         return items;
       }

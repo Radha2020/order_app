@@ -7,24 +7,27 @@ import 'package:path_provider/path_provider.dart';
 import 'package:order_app/model/cart.dart';
 import 'dart:async';
 
-class DBprovider {
+class DBHelp {
   static final _databaseName = "MyDatabase.db";
   static final _databaseVersion = 1;
 
-  static final table = 'my_table';
+  // static final table = 'my_table';
+
+  static final table1 = 'my_table';
 
   static final columnId = 'id';
   static final columnCode = 'code';
 
   static final columnImage = 'imageurl';
   static final columnDesc = 'desc';
+  static final columnUnit = 'unit';
   static final columnPrice = 'price';
   static final columnQuantity = 'quantity';
   static final columnTotal = 'total';
 
   // make this a singleton class
-  DBprovider._privateConstructor();
-  static final DBprovider instance = DBprovider._privateConstructor();
+  DBHelp._privateConstructor();
+  static final DBHelp instance = DBHelp._privateConstructor();
 
   // only have a single app-wide reference to the database
   static Database _database;
@@ -46,12 +49,13 @@ class DBprovider {
   // SQL code to create the database table
   Future _onCreate(Database db, int version) async {
     await db.execute('''
-          CREATE TABLE $table (
+          CREATE TABLE $table1 (
             $columnId INTEGER PRIMARY KEY,
 
             $columnCode TEXT NOT NULL,
             $columnImage TEXT NOT NULL,  
             $columnDesc TEXT NOT NULL,
+            $columnUnit TEXT NOT NULL,
             $columnPrice INTEGER,
             $columnQuantity INTEGER,
             $columnTotal INTEGER
@@ -65,10 +69,11 @@ class DBprovider {
 
   Future<int> insert(Cart cart) async {
     Database db = await instance.database;
-    return await db.insert(table, {
+    return await db.insert(table1, {
       'code': cart.code,
       'imageurl': cart.imageurl,
       'desc': cart.desc,
+      'unit': cart.unit,
       'price': cart.price,
       'quantity': cart.quantity,
       'total': cart.total
@@ -79,13 +84,13 @@ class DBprovider {
   // a key-value list of columns.
   Future<List<Map<String, dynamic>>> queryAllRows() async {
     Database db = await instance.database;
-    return await db.query(table);
+    return await db.query(table1);
   }
 
   Future<int> calculateTotal() async {
     var db = await instance.database;
     int result = Sqflite.firstIntValue(
-        await db.rawQuery("SELECT SUM($columnTotal) as Total FROM $table"));
+        await db.rawQuery("SELECT SUM($columnTotal) as Total FROM $table1"));
     print(result);
     return result;
   }
@@ -99,7 +104,7 @@ class DBprovider {
     int tot = row[columnTotal];
     print(tot);
     return await db.rawUpdate(
-        "UPDATE $table SET $columnQuantity=$qty,$columnTotal=$tot WHERE desc='$desc'");
+        "UPDATE $table1 SET $columnQuantity=$qty,$columnTotal=$tot WHERE desc='$desc'");
     //return await db.rawUpdate(sql)
   }
 
@@ -107,12 +112,12 @@ class DBprovider {
   Future<int> deletetable() async {
     Database db = await instance.database;
     // await db.delete(table2);
-    return await db.delete(table);
+    return await db.delete(table1);
   }
 
   Future<int> queryRowCount() async {
     Database db = await instance.database;
-    var x = await db.rawQuery('SELECT COUNT(*) FROM $table');
+    var x = await db.rawQuery('SELECT COUNT(*) FROM $table1');
     int count = Sqflite.firstIntValue(x);
     print(count);
     return count;
@@ -122,7 +127,7 @@ class DBprovider {
     Database db = await instance.database;
     print("desc");
     print(desc);
-    return await db.delete(table, where: '$columnDesc = ?', whereArgs: [desc]);
+    return await db.delete(table1, where: '$columnDesc = ?', whereArgs: [desc]);
   }
 
 //view cart page
@@ -131,8 +136,8 @@ class DBprovider {
     Database db = await instance.database;
 
     var result = await db.rawQuery(
-        'select $table.$columnId,$table.$columnCode,$table.$columnImage, $table.$columnDesc,$table.$columnPrice,$table.$columnQuantity,$table.$columnTotal '
-        'from $table');
+        'select $table1.$columnId,$table1.$columnCode,$table1.$columnImage, $table1.$columnDesc,$table1.$columnUnit,$table1.$columnPrice,$table1.$columnQuantity,$table1.$columnTotal '
+        'from $table1');
     return result;
   }
 
@@ -140,13 +145,13 @@ class DBprovider {
     print("id");
     print(id);
     Database db = await instance.database;
-    return await db.delete(table, where: '$columnId = ?', whereArgs: [id]);
+    return await db.delete(table1, where: '$columnId = ?', whereArgs: [id]);
   }
 
   Future<int> getlastrowid() async {
     Database db = await instance.database;
     int number = Sqflite.firstIntValue(
-        await db.rawQuery("SELECT MAX($columnId) from $table"));
+        await db.rawQuery("SELECT MAX($columnId) from $table1"));
     print("last row id");
     print(number);
     return number;
@@ -160,7 +165,7 @@ class DBprovider {
 
     Database db = await instance.database;
     int count = Sqflite.firstIntValue(await db
-        .rawQuery("SELECT COUNT(*) FROM $table WHERE $columnDesc='$c'"));
+        .rawQuery("SELECT COUNT(*) FROM $table1 WHERE $columnDesc='$c'"));
     //print("count");
     //print(count);
     return count;
@@ -173,8 +178,8 @@ class DBprovider {
     print(c);
 
     Database db = await instance.database;
-    int count = Sqflite.firstIntValue(await db
-        .rawQuery("SELECT $columnQuantity FROM $table WHERE $columnDesc='$c'"));
+    int count = Sqflite.firstIntValue(await db.rawQuery(
+        "SELECT $columnQuantity FROM $table1 WHERE $columnDesc='$c'"));
     //print("count");
     //print(count);
     return count;

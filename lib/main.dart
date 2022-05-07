@@ -6,7 +6,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:order_app/auth/login.dart';
 import 'package:order_app/auth/registration.dart';
-import 'package:order_app/DBprovider.dart';
+import 'package:order_app/DBHelp.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 //import 'dart:io';
 import 'package:order_app/model/category.dart';
@@ -41,7 +41,7 @@ class MyApp extends StatefulWidget {
 
 class _State extends State<MyApp> {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
-  final dbHelper = DBprovider.instance;
+  final dbHelper = DBHelp.instance;
   String username = '';
   String email = '';
   String Address = 'search';
@@ -404,6 +404,30 @@ class _State extends State<MyApp> {
                         ]);
                       })),
               SizedBox(height: 30),
+              Row(children: <Widget>[
+                new RaisedButton(
+                  child: new Text('All Items'),
+                  onPressed: () {
+                    setState(() {
+                      Services.fetchCategory().then((categoriesFromServer) {
+                        setState(() {
+                          categoryList = categoriesFromServer;
+                          print(categoryList.length);
+                          _category = "All";
+                          //_enabled = false;
+                        });
+                      });
+
+                      Services.fetchBanner().then((bannersFromServer) {
+                        setState(() {
+                          bannerList = bannersFromServer;
+                          print(bannerList.length);
+                        });
+                      });
+                    });
+                  },
+                ),
+              ]),
               _category != null
                   ? Text(
                       '$_category',
@@ -471,14 +495,6 @@ class _State extends State<MyApp> {
                                           fontSize: 12,
                                           fontWeight: FontWeight.w500,
                                           color: Colors.grey),
-                                    ),
-                                    SizedBox(height: 5),
-                                    Text(
-                                      '500G',
-                                      style: TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w700,
-                                          color: Colors.black),
                                     ),
                                     SizedBox(height: 15),
                                     SizedBox(

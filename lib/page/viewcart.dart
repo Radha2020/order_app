@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:order_app/main.dart';
 import 'dart:async';
-import 'package:order_app/DBprovider.dart';
+import 'package:order_app/DBHelp.dart';
 import 'package:order_app/model/cart.dart';
 import 'package:order_app/page/emptycart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,8 +12,13 @@ import 'package:order_app/auth/registration.dart';
 
 import 'package:order_app/page/product_details.dart';
 import 'package:order_app/auth/registration.dart';
+import 'package:order_app/page/checkout_screen.dart';
 
-//import 'package:pay/pay.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:pay/pay.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:whatsapp_unilink/whatsapp_unilink.dart';
 
 void main() {
   //var title;
@@ -22,21 +27,21 @@ void main() {
   ));
 }
 
-/*const _paymentItems = [
+const _paymentItems = [
   PaymentItem(
     label: 'Total',
     amount: '99.99',
     status: PaymentItemStatus.final_price,
   )
 ];
-*/
+
 class ViewCart extends StatefulWidget {
   @override
   ViewCartState createState() => ViewCartState();
 }
 
 class ViewCartState extends State<ViewCart> {
-  final dbHelper = DBprovider.instance;
+  final dbHelper = DBHelp.instance;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Cart> cart = [];
   int _total;
@@ -60,6 +65,11 @@ class ViewCartState extends State<ViewCart> {
     _loaddata();
     _deliverycharge();
     _calcTotal();
+  }
+
+  void launchwhatsapp(number, message) async {
+    String url = "whatsapp://send?phone=$number text=$message";
+    await canLaunch(url) ? launch(url) : print("unable to open whatsapp");
   }
 
   Future<List<Cart>> _loaddata() async {
@@ -95,9 +105,9 @@ class ViewCartState extends State<ViewCart> {
     var total = quantity * price;
     print(total);
     Map<String, dynamic> row = {
-      DBprovider.columnDesc: desc,
-      DBprovider.columnQuantity: quantity,
-      DBprovider.columnTotal: total,
+      DBHelp.columnDesc: desc,
+      DBHelp.columnQuantity: quantity,
+      DBHelp.columnTotal: total,
     };
     dbHelper.update(row, desc);
     setState(() {
@@ -119,9 +129,9 @@ class ViewCartState extends State<ViewCart> {
     var total = quantity * price;
     print(total);
     Map<String, dynamic> row = {
-      DBprovider.columnDesc: desc,
-      DBprovider.columnQuantity: quantity,
-      DBprovider.columnTotal: total,
+      DBHelp.columnDesc: desc,
+      DBHelp.columnQuantity: quantity,
+      DBHelp.columnTotal: total,
     };
     dbHelper.update(row, desc);
     setState(() {
@@ -180,14 +190,8 @@ class ViewCartState extends State<ViewCart> {
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => SecondPage()));
     } else {
-      print("else part ");
-      final snackBar = SnackBar(
-          backgroundColor: Colors.red,
-          content: Text("pls Complete Profile Details"));
-
-      ScaffoldMessenger.of(_scaffoldKey.currentContext).showSnackBar(snackBar);
-      //  Navigator.push(context,
-      //    MaterialPageRoute(builder: (context) => CompleteProfilePage()));
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => Checkout()));
     }
   }
 
@@ -234,13 +238,15 @@ class ViewCartState extends State<ViewCart> {
                   Container(
                     padding: EdgeInsets.all(10),
                     child: ListView.separated(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
                         separatorBuilder: (BuildContext context, int index) =>
                             const Divider(
                               thickness: 3,
                             ),
                         itemCount: cart.length,
                         //itemExtent: 70.0,
-                        shrinkWrap: true,
+
                         itemBuilder: (BuildContext context, int index) {
                           return Row(children: [
                             SizedBox(width: 10, height: 20),
@@ -266,7 +272,7 @@ class ViewCartState extends State<ViewCart> {
                                   ),
                                   SizedBox(height: 5),
                                   Text(
-                                    '(500 g)\t\t Rs.'
+                                    '[${cart[index].unit}].\t\t Rs.'
                                     '${cart[index].price}',
                                     style: TextStyle(
                                         fontSize: 12,
@@ -621,22 +627,27 @@ class ViewCartState extends State<ViewCart> {
                   SizedBox(
                     height: 35,
                   ),
-                  /*                GooglePayButton(
-                    paymentConfigurationAsset:
-                        'default_payment_profile_google_pay.json',
-                    paymentItems: _paymentItems,
-                    style: GooglePayButtonStyle.black,
-                    type: GooglePayButtonType.pay,
-                    margin: const EdgeInsets.only(top: 15.0),
-                    onPaymentResult: (data) {
-                      print(data);
-                    },
-                    loadingIndicator: const Center(
-                      child: CircularProgressIndicator(),
+                  /*                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    //Padding(
+                    //  padding: const EdgeInsets.only(left: 50),
+                    GooglePayButton(
+                      paymentConfigurationAsset: 'gpay.json',
+                      paymentItems: _paymentItems,
+                      height: 50,
+                      width: 200,
+                      style: GooglePayButtonStyle.black,
+                      type: GooglePayButtonType.pay,
+                      margin: const EdgeInsets.only(top: 15.0),
+                      onPaymentResult: (data) {
+                        print(data);
+                      },
+                      loadingIndicator: const Center(
+                        child: CircularProgressIndicator(),
+                      ),
                     ),
-                  ),
+                  ])
 */
-                  /* ElevatedButton(
+                  ElevatedButton(
                     child: new Text("Place Order"),
                     style: ElevatedButton.styleFrom(
                       primary: Colors.red,
@@ -652,7 +663,6 @@ class ViewCartState extends State<ViewCart> {
                       //    MaterialPageRoute(builder: (context) => SecondPage()));
                     },
                   )
-               */
                 ]))));
   }
 }
