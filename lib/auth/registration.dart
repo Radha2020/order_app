@@ -17,7 +17,7 @@ Future<String> makePostRequest(name, email, phone, address) async {
   print(jsonRegister);
 
 // set up POST request arguments
-  String url = 'http://hospital.impelcreations.co.in/hosp/Api/flut';
+  String url = 'http://glenshop.000webhostapp.com/hosp/Api/flut';
   Map<String, String> headers = {"Content-type": "application/json"};
 
   // String json = '{"title"t

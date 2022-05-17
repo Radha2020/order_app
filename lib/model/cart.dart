@@ -1,4 +1,4 @@
-import 'package:order_app/services/DBprovider.dart';
+import 'package:order_app/DBHelp.dart';
 
 class Cart {
   int id;
@@ -26,14 +26,14 @@ class Cart {
 
   Map<String, dynamic> toMap() {
     return {
-      DBprovider.columnId: id,
-      DBprovider.columnCode: code,
-      DBprovider.columnImage: imageurl,
-      DBprovider.columnDesc: desc,
-      DBprovider.columnUnit: unit,
-      DBprovider.columnPrice: price,
-      DBprovider.columnQuantity: quantity,
-      DBprovider.columnTotal: total
+      DBHelp.columnId: id,
+      DBHelp.columnCode: code,
+      DBHelp.columnImage: imageurl,
+      DBHelp.columnDesc: desc,
+      DBHelp.columnUnit: unit,
+      DBHelp.columnPrice: price,
+      DBHelp.columnQuantity: quantity,
+      DBHelp.columnTotal: total
       //   DatabaseHelper.columnMiles: miles,
     };
   }

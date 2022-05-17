@@ -8,7 +8,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:order_app/page/account_details.dart';
 
+import 'package:order_app/page/order_history.dart';
+
 import 'package:order_app/auth/registration.dart';
+
+import 'package:order_app/model/cart.dart';
+
+import 'package:order_app/DBHelp.dart';
 
 // This class handles the Page to dispaly the user's info on the "Edit Profile" Screen
 class ProfilePage extends StatefulWidget {
@@ -22,7 +28,8 @@ class _ProfilePageState extends State<ProfilePage> {
   String name;
   String email;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-
+  final dbHelper = DBHelp.instance;
+  List<Cart> cart = [];
   void initState() {
     loaddata();
   }
@@ -48,6 +55,21 @@ class _ProfilePageState extends State<ProfilePage> {
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => Account_detailsPage()));
     }
+  }
+
+  //Future<List<Cart>>
+  order() async {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => OrderHistory()));
+
+    /* final Rows = await dbHelper.historyqueryDetails();
+    print('query history details :');
+    Rows.forEach((row) => print(row));
+    cart.clear();
+    Rows.forEach((row) => cart.add(Cart.fromMap(row)));
+    print(cart.length);
+    return cart;
+ */
   }
 
   void clearuser() async {
@@ -118,7 +140,9 @@ class _ProfilePageState extends State<ProfilePage> {
               ProfileMenu(
                 icon: "assets/User Icon.svg",
                 text: "Past Order",
-                press: () {},
+                press: () async {
+                  order();
+                },
               ),
               ProfileMenu(
                 icon: "assets/User Icon.svg",

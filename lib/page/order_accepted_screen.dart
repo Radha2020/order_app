@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
+import 'package:order_app/DBHelp.dart';
+import 'package:order_app/main.dart';
 //import 'package:grocery_app/common_widgets/app_button.dart';
 
 class OrderAcceptedScreen extends StatelessWidget {
+  final dbHelper = DBHelp.instance;
+
+  void delete() {
+    dbHelper.deletetable();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,7 +51,7 @@ class OrderAcceptedScreen extends StatelessWidget {
             Spacer(
               flex: 8,
             ),
-            ElevatedButton(
+            /*ElevatedButton(
               child: new Text("Place Order"),
               style: ElevatedButton.styleFrom(
                 primary: Colors.red,
@@ -57,13 +66,15 @@ class OrderAcceptedScreen extends StatelessWidget {
                 // Navigator.push(context,
                 //    MaterialPageRoute(builder: (context) => SecondPage()));
               },
-            ),
+            ),*/
             Spacer(
               flex: 2,
             ),
             InkWell(
               onTap: () {
-                Navigator.pop(context);
+                delete();
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => MyApp()));
               },
               child: Text(
                 "Back To Home",

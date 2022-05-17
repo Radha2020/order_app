@@ -56,7 +56,7 @@ class Services {
     String b = json.encode({'catid': catid});
 
     String url =
-        'http://hospital.impelcreations.co.in/hosp/Api/flutcategoriesperId';
+        'http://glenshop.000webhostapp.com/hosp/Api/flutcategoriesperId';
 
     Map<String, String> headers = {"Content-type": "application/json"};
     try {

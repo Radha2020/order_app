@@ -5,15 +5,17 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:order_app/model/cart.dart';
+import 'package:order_app/model/order.dart';
+
 import 'dart:async';
 
 class DBHelp {
   static final _databaseName = "MyDatabase.db";
   static final _databaseVersion = 1;
 
-  // static final table = 'my_table';
+  static final contacttable = 'contacttable';
 
-  static final table1 = 'my_table';
+  static final carttable = 'carttable';
 
   static final columnId = 'id';
   static final columnCode = 'code';
@@ -24,6 +26,11 @@ class DBHelp {
   static final columnPrice = 'price';
   static final columnQuantity = 'quantity';
   static final columnTotal = 'total';
+
+  static final columnDate = 'date';
+  static final columnAddress = 'address';
+  static final columnPhone = 'phone';
+  static final columnName = 'name';
 
   // make this a singleton class
   DBHelp._privateConstructor();
@@ -49,9 +56,8 @@ class DBHelp {
   // SQL code to create the database table
   Future _onCreate(Database db, int version) async {
     await db.execute('''
-          CREATE TABLE $table1 (
+          CREATE TABLE $carttable (
             $columnId INTEGER PRIMARY KEY,
-
             $columnCode TEXT NOT NULL,
             $columnImage TEXT NOT NULL,  
             $columnDesc TEXT NOT NULL,
@@ -61,6 +67,16 @@ class DBHelp {
             $columnTotal INTEGER
           )
           ''');
+    await db.execute('''
+          CREATE TABLE $contacttable (
+            $columnId INTEGER PRIMARY KEY,
+
+            $columnDate TEXT NOT NULL,
+            $columnAddress TEXT NOT NULL,  
+            $columnPhone TEXT NOT NULL,
+            $columnName TEXT NOT NULL
+            )
+          ''');
   }
 
   // Helper methods
@@ -69,7 +85,7 @@ class DBHelp {
 
   Future<int> insert(Cart cart) async {
     Database db = await instance.database;
-    return await db.insert(table1, {
+    return await db.insert(carttable, {
       'code': cart.code,
       'imageurl': cart.imageurl,
       'desc': cart.desc,
@@ -80,17 +96,32 @@ class DBHelp {
     });
   }
 
+  Future<int> inserthistory(Order order) async {
+    Database db = await instance.database;
+    return await db.insert(contacttable, {
+      'date': order.date,
+      'address': order.address,
+      'phone': order.phone,
+      'name': order.name
+    });
+  }
+
   // All of the rows are returned as a list of maps, where each map is
   // a key-value list of columns.
   Future<List<Map<String, dynamic>>> queryAllRows() async {
     Database db = await instance.database;
-    return await db.query(table1);
+    return await db.query(carttable);
+  }
+
+  Future<List<Map<String, dynamic>>> queryAllRowshistory() async {
+    Database db = await instance.database;
+    return await db.query(contacttable);
   }
 
   Future<int> calculateTotal() async {
     var db = await instance.database;
     int result = Sqflite.firstIntValue(
-        await db.rawQuery("SELECT SUM($columnTotal) as Total FROM $table1"));
+        await db.rawQuery("SELECT SUM($columnTotal) as Total FROM $carttable"));
     print(result);
     return result;
   }
@@ -104,20 +135,20 @@ class DBHelp {
     int tot = row[columnTotal];
     print(tot);
     return await db.rawUpdate(
-        "UPDATE $table1 SET $columnQuantity=$qty,$columnTotal=$tot WHERE desc='$desc'");
+        "UPDATE $carttable SET $columnQuantity=$qty,$columnTotal=$tot WHERE desc='$desc'");
     //return await db.rawUpdate(sql)
   }
 
   //del all table dtls
   Future<int> deletetable() async {
     Database db = await instance.database;
-    // await db.delete(table2);
-    return await db.delete(table1);
+    //await db.delete(carttable);
+    return await db.delete(carttable);
   }
 
   Future<int> queryRowCount() async {
     Database db = await instance.database;
-    var x = await db.rawQuery('SELECT COUNT(*) FROM $table1');
+    var x = await db.rawQuery('SELECT COUNT(*) FROM $carttable');
     int count = Sqflite.firstIntValue(x);
     print(count);
     return count;
@@ -127,7 +158,8 @@ class DBHelp {
     Database db = await instance.database;
     print("desc");
     print(desc);
-    return await db.delete(table1, where: '$columnDesc = ?', whereArgs: [desc]);
+    return await db
+        .delete(carttable, where: '$columnDesc = ?', whereArgs: [desc]);
   }
 
 //view cart page
@@ -136,22 +168,31 @@ class DBHelp {
     Database db = await instance.database;
 
     var result = await db.rawQuery(
-        'select $table1.$columnId,$table1.$columnCode,$table1.$columnImage, $table1.$columnDesc,$table1.$columnUnit,$table1.$columnPrice,$table1.$columnQuantity,$table1.$columnTotal '
-        'from $table1');
+        'select $carttable.$columnId,$carttable.$columnCode,$carttable.$columnImage, $carttable.$columnDesc,$carttable.$columnUnit,$carttable.$columnPrice,$carttable.$columnQuantity,$carttable.$columnTotal '
+        'from $carttable');
     return result;
   }
+
+  /*Future<List<Map<String, dynamic>>> historyqueryDetails() async {
+    Database db = await instance.database;
+
+    var result = await db.rawQuery(
+        'select $contacttable.$columnId,$contacttable.$columnCode,$contacttable.$columnImage, $contacttable.$columnDesc,$contacttable.$columnUnit,$contacttable.$columnPrice,$contacttable.$columnQuantity,$contacttable.$columnTotal '
+        'from $contacttable');
+    return result;
+  }*/
 
   Future<int> delete(int id) async {
     print("id");
     print(id);
     Database db = await instance.database;
-    return await db.delete(table1, where: '$columnId = ?', whereArgs: [id]);
+    return await db.delete(carttable, where: '$columnId = ?', whereArgs: [id]);
   }
 
   Future<int> getlastrowid() async {
     Database db = await instance.database;
     int number = Sqflite.firstIntValue(
-        await db.rawQuery("SELECT MAX($columnId) from $table1"));
+        await db.rawQuery("SELECT MAX($columnId) from $carttable"));
     print("last row id");
     print(number);
     return number;
@@ -165,7 +206,7 @@ class DBHelp {
 
     Database db = await instance.database;
     int count = Sqflite.firstIntValue(await db
-        .rawQuery("SELECT COUNT(*) FROM $table1 WHERE $columnDesc='$c'"));
+        .rawQuery("SELECT COUNT(*) FROM $carttable WHERE $columnDesc='$c'"));
     //print("count");
     //print(count);
     return count;
@@ -179,7 +220,7 @@ class DBHelp {
 
     Database db = await instance.database;
     int count = Sqflite.firstIntValue(await db.rawQuery(
-        "SELECT $columnQuantity FROM $table1 WHERE $columnDesc='$c'"));
+        "SELECT $columnQuantity FROM $carttable WHERE $columnDesc='$c'"));
     //print("count");
     //print(count);
     return count;

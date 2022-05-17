@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import 'package:order_app/page/viewcart.dart';
@@ -6,7 +8,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:order_app/model/cart.dart';
 
+import 'package:order_app/model/order.dart';
+
 import 'package:order_app/DBHelp.dart';
+
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:order_app/page/order_accepted_screen.dart';
 
 class Checkout extends StatefulWidget {
   @override
@@ -17,11 +25,14 @@ class check_out extends State<Checkout> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   String address;
+  String phone;
+  String name;
   int _total;
 
   int _gtotal;
   final dbHelper = DBHelp.instance;
   List<Cart> cart = [];
+  List<Order> order = [];
   void initState() {
     loadaddress();
     loaddata();
@@ -32,7 +43,9 @@ class check_out extends State<Checkout> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       address = prefs.getString('address');
-      print(address);
+      phone = prefs.getString('phone');
+      name = prefs.getString('name');
+      print(name);
       // addressController.text = address;
     });
   }
@@ -57,6 +70,76 @@ class check_out extends State<Checkout> {
     });
   }
 
+  finalorder() async {
+    final DateTime now = DateTime.now();
+    final DateFormat formatter = DateFormat('dd-MM-yyyy');
+    final String formatted = formatter.format(now);
+    Map<String, dynamic> row = {
+      DBHelp.columnDate: formatted,
+      DBHelp.columnAddress: address,
+      DBHelp.columnPhone: phone,
+      DBHelp.columnName: name
+    };
+
+    Order order = Order.fromMap(row);
+    final id = await dbHelper.inserthistory(order);
+    print('new row inserted');
+
+    final allRows = await dbHelper.queryAllRowshistory();
+    print('query all rows:');
+    allRows.forEach((row) => print(row));
+    pushorder();
+  }
+
+  Future<String> pushorder() async {
+    print("loaddata calling");
+
+    final Rows = await dbHelper.queryDetails();
+    String jsonCart = jsonEncode(Rows);
+    print("reg details");
+    print(jsonCart);
+
+    //set up POST request arguments
+    String url = 'http://glenshop.000webhostapp.com/hosp/Api/order';
+    Map<String, String> headers = {"Content-type": "application/json"};
+
+    try {
+      http.Response response =
+          await http.post(url, headers: headers, body: jsonCart);
+      // http.Response response1 =
+      //  await http.post(url1, headers: headers, body: jsonUser1);
+
+      print(response.statusCode);
+      //  print(response1.statusCode);
+
+      print(response.body.toString());
+
+      var data = jsonDecode(response.body);
+      // var data1 = jsonDecode(response1.body);
+
+      String status = data["status"];
+      // String status1 = data["status"];
+
+      if (status == "success"
+
+          // && status1 == "success"
+          ) {
+        print(response.body.toString());
+        //  print(response1.body.toString());
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => OrderAcceptedScreen()));
+
+        //    return status;
+      }
+    } catch (err) {
+      print('Caught error: $err');
+
+      /// return err;
+    }
+    // Navigator.push(context,
+    //  MaterialPageRoute(builder: (context) => OrderAcceptedScreen()));
+  }
+
   Future<List<Cart>> loaddata() async {
     print("loaddata calling");
 
@@ -67,7 +150,9 @@ class check_out extends State<Checkout> {
     //  print(Rows);
     Rows.forEach((row) => cart.add(Cart.fromMap(row)));
     print(cart.length);
-
+    setState(() {
+      cart = cart;
+    });
     // if (cart.length == 0) {
     //  Navigator.push(
     //    context, MaterialPageRoute(builder: (context) => EmptyCart()));
@@ -321,7 +406,9 @@ class check_out extends State<Checkout> {
                               ),
                               side: BorderSide(color: Colors.amber.shade500),
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              finalorder();
+                            },
                             child: Text(
                               'CONFIRM ORDER',
                               style:
