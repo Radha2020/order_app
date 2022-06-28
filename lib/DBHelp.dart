@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:path/path.dart';
@@ -69,8 +70,6 @@ class DBHelp {
           ''');
     await db.execute('''
           CREATE TABLE $contacttable (
-            $columnId INTEGER PRIMARY KEY,
-
             $columnDate TEXT NOT NULL,
             $columnAddress TEXT NOT NULL,  
             $columnPhone TEXT NOT NULL,
@@ -146,6 +145,12 @@ class DBHelp {
     return await db.delete(carttable);
   }
 
+  Future<int> deletecontacttable() async {
+    Database db = await instance.database;
+    //await db.delete(carttable);
+    return await db.delete(contacttable);
+  }
+
   Future<int> queryRowCount() async {
     Database db = await instance.database;
     var x = await db.rawQuery('SELECT COUNT(*) FROM $carttable');
@@ -172,15 +177,6 @@ class DBHelp {
         'from $carttable');
     return result;
   }
-
-  /*Future<List<Map<String, dynamic>>> historyqueryDetails() async {
-    Database db = await instance.database;
-
-    var result = await db.rawQuery(
-        'select $contacttable.$columnId,$contacttable.$columnCode,$contacttable.$columnImage, $contacttable.$columnDesc,$contacttable.$columnUnit,$contacttable.$columnPrice,$contacttable.$columnQuantity,$contacttable.$columnTotal '
-        'from $contacttable');
-    return result;
-  }*/
 
   Future<int> delete(int id) async {
     print("id");

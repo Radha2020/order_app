@@ -39,7 +39,10 @@ Future<String> makePostRequest(name, email, phone, address) async {
       prefs.setString('phone', phone);
       prefs.setString('address', address);
 
-      // print(prefs.getString('name'));
+      print(prefs.getString('name'));
+      print(prefs.getString('email'));
+      print(prefs.getString('phone'));
+      print(prefs.getString('address'));
     }
     //print(response.body.toString());
     // await new Future.delayed(const Duration(seconds: 2));
@@ -47,7 +50,7 @@ Future<String> makePostRequest(name, email, phone, address) async {
     return status;
   } catch (err) {
     print('Caught error: $err');
-    return err;
+    //   return err;
   }
 }
 

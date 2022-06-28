@@ -73,6 +73,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void clearuser() async {
+    dbHelper.deletecontacttable();
     SharedPreferences preferences = await SharedPreferences.getInstance();
     await preferences.clear();
     Navigator.push(context, MaterialPageRoute(builder: (context) => MyApp()));

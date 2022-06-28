@@ -97,7 +97,7 @@ class _State extends State<MyApp> {
     }
   }
 
-  void getMessage() {
+  /* void getMessage() {
     _firebaseMessaging.configure(
         onMessage: (Map<String, dynamic> message) async {
       showDialog(
@@ -158,7 +158,7 @@ class _State extends State<MyApp> {
       // print(_message);
     });
   }
-
+*/
   _getcred() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
