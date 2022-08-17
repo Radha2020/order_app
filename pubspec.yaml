@@ -32,7 +32,7 @@ dependencies:
   whatsapp_unilink: ^2.0.1+1
   flutter_svg: ^1.0.3
 flutter_icons:
-  image_path: "assets/logo.jpg"
+  image_path: "assets/logo.png"
   android: true
   ios: true
 

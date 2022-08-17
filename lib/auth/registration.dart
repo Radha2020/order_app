@@ -17,7 +17,7 @@ Future<String> makePostRequest(name, email, phone, address) async {
   print(jsonRegister);
 
 // set up POST request arguments
-  String url = 'http://glenshop.000webhostapp.com/hosp/Api/flut';
+  String url = 'https://techmugavari.co.in/hosp/Apiorder/flut';
   Map<String, String> headers = {"Content-type": "application/json"};
 
   // String json = '{"title"t
@@ -158,7 +158,7 @@ class _State extends State<SecondPage> {
                                   border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(30))),
                               validator: (value) {
-                                if (value.isEmpty) {
+                                if (value.trim().isEmpty) {
                                   return 'Please enter some text';
                                 }
 
@@ -181,7 +181,7 @@ class _State extends State<SecondPage> {
                                   border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(30))),
                               validator: (value) {
-                                if (value.isEmpty) {
+                                if (value.trim().isEmpty) {
                                   return 'Please enter some text';
                                 }
 
@@ -210,7 +210,7 @@ class _State extends State<SecondPage> {
                                 border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(30))),
                             validator: (value) {
-                              if (value.isEmpty) {
+                              if (value.trim().isEmpty) {
                                 return 'Please enter phone number';
                               }
                               return null;
@@ -231,7 +231,7 @@ class _State extends State<SecondPage> {
                                 border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(30))),
                             validator: (value) {
-                              if (value.isEmpty) {
+                              if (value.trim().isEmpty) {
                                 return 'Please enter some text';
                               }
                               return null;

@@ -10,7 +10,7 @@
          
     <application 
         android:name="${applicationName}"
-        android:label="order_app"
+        android:label="Store"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 //import 'package:geocoding/geocoding.dart';
 //import 'package:flutter/services.dart';
 import 'dart:io';
@@ -53,23 +54,30 @@ class _State extends State<MyApp> {
   bool _enabled = true;
   List<Category> categoryList = [];
   List<MyBanner> bannerList = [];
+  bool isLoading;
   void initState() {
+    isLoading = true;
     super.initState();
+
     checkcart();
-
-    Services.fetchCategory().then((categoriesFromServer) {
-      setState(() {
-        categoryList = categoriesFromServer;
-        print(categoryList.length);
-        _category = "All";
-        //_enabled = false;
+    Future.delayed(Duration(seconds: 5)).then((value) {
+      Services.fetchCategory().then((categoriesFromServer) {
+        setState(() {
+          categoryList = categoriesFromServer;
+          print(categoryList.length);
+          _category = "All";
+          isLoading = false;
+          //_enabled = false;
+        });
       });
-    });
+      // });
 
-    Services.fetchBanner().then((bannersFromServer) {
-      setState(() {
-        bannerList = bannersFromServer;
-        print(bannerList.length);
+      Services.fetchBanner().then((bannersFromServer) {
+        setState(() {
+          bannerList = bannersFromServer;
+          print(bannerList.length);
+          isLoading = false;
+        });
       });
     });
   }
@@ -220,26 +228,13 @@ class _State extends State<MyApp> {
               elevation: 0.0,
               centerTitle: true,
               title: Column(
-                // crossAxisAlignment: CrossAxisAlignment.s.start,
                 children: [
-                  Text("Impel",
+                  SizedBox(height: 50),
+                  Text("Store",
                       style: Theme.of(context)
                           .textTheme
                           .headline5
                           .copyWith(color: Colors.redAccent)),
-                  // if (_currentPosition != null)
-                  // Text(
-                  //    "LAT: ${_currentPosition.latitude}, LNG: ${_currentPosition.longitude}"),
-                  Row(
-                    children: [
-                      Text(Address),
-                      // Icon(
-                      // Icons.keyboard_arrow_down,
-                      //color: Colors.green,
-                      // size: 30,
-                      // )
-                    ],
-                  ),
                   Divider(),
                 ],
               )),
@@ -357,6 +352,36 @@ class _State extends State<MyApp> {
                     .headline6
                     .copyWith(fontWeight: FontWeight.bold, fontSize: 18),
               ),
+              // isLoading
+              //   ? const Center(child: CircularProgressIndicator())
+              /*Container(
+                      height: 115,
+                      child: ListView.builder(
+                          itemCount: categoryList.length,
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          //physics: NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            return Column(children: [
+                              Container(
+                                padding: EdgeInsets.all(17),
+                                margin: EdgeInsets.only(
+                                    top: 5, bottom: 2, left: 7, right: 5),
+                                height: 90,
+                                width: 90,
+                                child: CircleAvatar(
+                                  backgroundColor: Colors.blue,
+                                  radius: 70.0,
+                                ),
+                              ),
+                              Text(categoryList[index].title,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .subtitle2
+                                      .copyWith(fontWeight: FontWeight.bold))
+                            ]);
+                          }))*/
+
               Container(
                   height: 115,
                   child: ListView.builder(
@@ -381,7 +406,7 @@ class _State extends State<MyApp> {
                                       .then((categoriesFromServer) {
                                     setState(() {
                                       bannerList = categoriesFromServer;
-                                      //print(categoryList.length);
+                                      print(bannerList.length);
                                     });
                                   }); /*setState(() {
                                 _categoryid = categoryList[index]
@@ -449,14 +474,13 @@ class _State extends State<MyApp> {
                           child: Row(
                             children: <Widget>[
                               Container(
-                                height: 110,
-                                width: 90,
-                                child: Image.network(
-                                  bannerList[index].imageUrl,
-                                  // 'https://placeimg.com/250/250/any',
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
+                                  height: 110,
+                                  width: 90,
+                                  child: Image.network(
+                                    bannerList[index].imageUrl,
+                                    // 'https://placeimg.com/250/250/any',
+                                    fit: BoxFit.cover,
+                                  )),
                               SizedBox(
                                 width: 5.0,
                               ),

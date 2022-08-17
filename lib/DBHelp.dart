@@ -29,9 +29,12 @@ class DBHelp {
   static final columnTotal = 'total';
 
   static final columnDate = 'date';
+  static final columnTime = 'time';
+
   static final columnAddress = 'address';
   static final columnPhone = 'phone';
   static final columnName = 'name';
+  static final columnGtotal = 'gtotal';
 
   // make this a singleton class
   DBHelp._privateConstructor();
@@ -71,9 +74,11 @@ class DBHelp {
     await db.execute('''
           CREATE TABLE $contacttable (
             $columnDate TEXT NOT NULL,
+            $columnTime TEXT NOT NULL,
             $columnAddress TEXT NOT NULL,  
             $columnPhone TEXT NOT NULL,
-            $columnName TEXT NOT NULL
+            $columnName TEXT NOT NULL,
+            $columnGtotal INTEGER
             )
           ''');
   }
@@ -99,9 +104,11 @@ class DBHelp {
     Database db = await instance.database;
     return await db.insert(contacttable, {
       'date': order.date,
+      'time': order.time,
       'address': order.address,
       'phone': order.phone,
-      'name': order.name
+      'name': order.name,
+      'gtotal': order.gtotal
     });
   }
 

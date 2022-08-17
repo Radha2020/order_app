@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import 'dart:io';
 import 'package:order_app/DBHelp.dart';
 import 'package:order_app/main.dart';
 import 'package:order_app/page/profile_page.dart';
+import 'package:order_app/page/bill_details.dart';
 
 import 'package:order_app/model/cart.dart';
+
+import 'package:order_app/model/history.dart';
+
+import 'package:order_app/services/Services.dart';
+import 'package:intl/intl.dart';
 //import 'package:grocery_app/common_widgets/app_button.dart';
 
 class OrderHistory extends StatefulWidget {
@@ -15,7 +22,7 @@ class OrderHistory extends StatefulWidget {
 
 class OrderHistoryState extends State<OrderHistory> {
   final dbHelper = DBHelp.instance;
-  List<Cart> cart = [];
+  List<History> history = [];
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -26,25 +33,37 @@ class OrderHistoryState extends State<OrderHistory> {
     });
   }
 
-  Future<List<Cart>> _loaddata() async {
+  Future<List<History>> _loaddata() async {
     print("loaddata calling");
-
+    Services.fetchHistory().then((bannersFromServer) {
+      setState(() {
+        history = bannersFromServer;
+        print(history.length);
+        //isLoading = false;
+      });
+    });
     //final Rows = await dbHelper.historyqueryDetails();
     print('query history details :');
+    //var now = DateTime.now();
+    //var formatterDate = DateFormat('dd/MM/yy');
+    // var formatterTime = DateFormat('kk:mm');
+    // String actualDate = formatterDate.format(now);
+    // String actualTime = DateFormat.jm().format(now);
     // Rows.forEach((row) => print(row));
-    cart.clear();
-    //  print(Rows);
+    history.clear();
+    // print(actualTime);
+
     // Rows.forEach((row) => cart.add(Cart.fromMap(row)));
     // print(cart.length);
     setState(() {
-      cart = cart;
+      history = history;
     });
     // if (cart.length == 0) {
     //  Navigator.push(
     //    context, MaterialPageRoute(builder: (context) => EmptyCart()));
     // } else {
 
-    return cart;
+    return history;
     // }
   }
 
@@ -83,7 +102,7 @@ class OrderHistoryState extends State<OrderHistory> {
               ],
             )),
         body: ListView.builder(
-            itemCount: cart.length,
+            itemCount: history.length,
             itemBuilder: (BuildContext cont, int ind) {
               return SafeArea(
                   child: Column(children: <Widget>[
@@ -101,29 +120,64 @@ class OrderHistoryState extends State<OrderHistory> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: <Widget>[
                                 // three line description
-                                Container(
+                                /*Container(
                                   alignment: Alignment.topLeft,
                                   child: Text(
-                                    cart[ind].desc,
+                                    history[ind].id.toString(),
                                     style: TextStyle(
                                       fontSize: 16.0,
                                       fontStyle: FontStyle.normal,
                                       color: Colors.black87,
                                     ),
                                   ),
-                                ),
+                                ),*/
 
                                 Container(
                                   margin: EdgeInsets.only(top: 3.0),
                                 ),
-                                Container(
-                                  alignment: Alignment.topLeft,
-                                  child: Text(
-                                    'To Deliver On :' + cart[ind].desc,
-                                    style: TextStyle(
-                                        fontSize: 13.0, color: Colors.black54),
-                                  ),
-                                ),
+                                Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: <Widget>[
+                                      Expanded(
+                                          flex: 5,
+                                          child: Container(
+                                            alignment: Alignment.topLeft,
+                                            child: Text(
+                                              'Order Id :' + history[ind].id,
+                                              style: TextStyle(
+                                                  fontSize: 13.0,
+                                                  color: Colors.black87),
+                                            ),
+                                          )),
+                                      Expanded(
+                                          flex: 2,
+                                          child: Container(
+                                              alignment: Alignment.topLeft,
+                                              child: Row(children: <Widget>[
+                                                Text(
+                                                  'Bill Details :',
+                                                  style: TextStyle(
+                                                      fontSize: 15.0,
+                                                      color: Colors.black87),
+                                                ),
+                                                InkWell(
+                                                  child: Icon(
+                                                    Icons.arrow_forward_ios,
+                                                    size: 20.0,
+                                                  ),
+                                                  onTap: () {
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                BillDetails(
+                                                                    id: history[
+                                                                            ind]
+                                                                        .id)));
+                                                  },
+                                                ),
+                                              ]))),
+                                    ]),
                                 Divider(
                                   height: 10.0,
                                   color: Colors.amber.shade500,
@@ -141,7 +195,7 @@ class OrderHistoryState extends State<OrderHistory> {
                                               MainAxisAlignment.center,
                                           children: <Widget>[
                                             Text(
-                                              'Order Id',
+                                              'Date',
                                               style: TextStyle(
                                                   fontSize: 13.0,
                                                   color: Colors.black54),
@@ -149,7 +203,7 @@ class OrderHistoryState extends State<OrderHistory> {
                                             Container(
                                               margin: EdgeInsets.only(top: 3.0),
                                               child: Text(
-                                                cart[ind].desc,
+                                                history[ind].date,
                                                 style: TextStyle(
                                                     fontSize: 15.0,
                                                     color: Colors.black87),
@@ -172,7 +226,7 @@ class OrderHistoryState extends State<OrderHistory> {
                                             Container(
                                               margin: EdgeInsets.only(top: 3.0),
                                               child: Text(
-                                                cart[ind].desc,
+                                                history[ind].gtotal,
                                                 style: TextStyle(
                                                     fontSize: 15.0,
                                                     color: Colors.black87),
@@ -187,7 +241,7 @@ class OrderHistoryState extends State<OrderHistory> {
                                               MainAxisAlignment.center,
                                           children: <Widget>[
                                             Text(
-                                              'Payment Type',
+                                              'Status',
                                               style: TextStyle(
                                                   fontSize: 13.0,
                                                   color: Colors.black54),
@@ -195,7 +249,7 @@ class OrderHistoryState extends State<OrderHistory> {
                                             Container(
                                               margin: EdgeInsets.only(top: 3.0),
                                               child: Text(
-                                                cart[ind].code,
+                                                history[ind].status,
                                                 style: TextStyle(
                                                     fontSize: 15.0,
                                                     color: Colors.black87),
@@ -218,7 +272,7 @@ class OrderHistoryState extends State<OrderHistory> {
                                       size: 20.0,
                                       color: Colors.amber.shade500,
                                     ),
-                                    Text(cart[ind].desc,
+                                    Text(history[ind].time,
                                         style: TextStyle(
                                             fontSize: 13.0,
                                             color: Colors.black54)),

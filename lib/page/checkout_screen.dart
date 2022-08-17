@@ -73,20 +73,28 @@ class check_out extends State<Checkout> {
   }
 
   finalorder() async {
-    final DateTime now = DateTime.now();
-    final DateFormat formatter = DateFormat('dd-MM-yyyy');
-    final String formatted = formatter.format(now);
-
+    //  final DateTime now = DateTime.now();
+    // final DateFormat formatter = DateFormat('dd-MM-yyyy');
+    // final String formatted = formatter.format(now);
+    var now = DateTime.now();
+    var formatterDate = DateFormat('dd/MM/yy');
+    var formatterTime = DateFormat('kk:mm');
+    String actualDate = formatterDate.format(now);
+    String actualTime = DateFormat('jm').format(now);
+    print(actualDate);
+    print(actualDate);
     final Rows = await dbHelper.queryDetails();
     Rows.forEach((row) => print(row));
     Rows.forEach((row) => cart.add(Cart.fromMap(row)));
     print("cart Details");
     print(cart);
     Map<String, dynamic> row = {
-      DBHelp.columnDate: formatted,
+      DBHelp.columnDate: actualDate,
+      DBHelp.columnTime: actualTime,
       DBHelp.columnAddress: address,
       DBHelp.columnPhone: phone,
       DBHelp.columnName: name,
+      DBHelp.columnGtotal: _gtotal
     };
 
     Order order = Order.fromMap(row);
@@ -110,37 +118,20 @@ class check_out extends State<Checkout> {
 
     final Rows = await dbHelper.queryDetails();
     final Rows1 = await dbHelper.queryAllRowshistory();
-    //  Map<String, dynamic> data = {"jsonCart": Rows, "jsonContact": Rows1};
     String jsonCart = jsonEncode(Rows);
     String jsonContact = jsonEncode(Rows1);
     List<Map<String, dynamic>> newList = Rows + Rows1;
     print("new List");
     print(newList);
-    // var body = Order.fromMap(formatted,)
-    //  String jsonFinal = jsonEncode(body);
-    // print("combined details");
-    // final queryParameters = {
-    //   "cart": jsonCart,
-    //   "contact": jsonContact,
-    // };
 
-    // String b = jsonEncode(newList);
-    // print(b);
-
-    //set up POST request arguments
-
-    String url = 'http://glenshop.000webhostapp.com/hosp/Api/order';
-    // String url1 = 'http://glenshop.000webhostapp.com/hosp/Api/contact';
+    String url = 'https://techmugavari.co.in/hosp/Apiorder/order';
 
     Map<String, String> headers = {"Content-type": "application/json"};
     try {
       http.Response response =
           await http.post(url, headers: headers, body: jsonEncode(newList));
-      // http.Response response1 =
-      //  await http.post(url1, headers: headers, body: jsonUser1);
 
       print(response.statusCode);
-      //  print(response1.statusCode);
 
       print(response.body.toString());
 
